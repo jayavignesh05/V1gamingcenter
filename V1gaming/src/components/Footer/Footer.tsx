@@ -12,7 +12,7 @@ export default function Footer() {
             <Link href="/" className="flex items-center gap-3 mb-4">
               <Gamepad2 className="w-8 h-8 text-[#00FF41]" />
               <span className="font-heading font-black text-2xl tracking-widest text-white uppercase">
-                CYBER<span className="text-[#00FF41]">HUB</span>
+                V1<span className="text-[#00FF41]">GAMING</span>
               </span>
             </Link>
             <p className="text-gray-400 text-sm font-medium mb-6">
@@ -56,7 +56,7 @@ export default function Footer() {
               </li>
               <li className="flex items-center gap-3 text-gray-400 text-sm font-medium">
                 <Mail className="w-5 h-5 text-[#FF006E] flex-shrink-0" />
-                <span>hello@cyberhub.in</span>
+                <span>hello@v1gaming.in</span>
               </li>
             </ul>
           </div>
@@ -64,7 +64,7 @@ export default function Footer() {
         </div>
 
         <div className="pt-8 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-4 text-sm font-medium text-gray-500">
-          <p>&copy; {new Date().getFullYear()} CyberHub Gaming Center. All rights reserved.</p>
+          <p>&copy; {new Date().getFullYear()} V1gaming Center. All rights reserved.</p>
           <p className="flex items-center gap-2">Built with passion for gamers <Gamepad2 className="w-4 h-4 text-[#FF006E]" /></p>
         </div>
       </div>

@@ -63,7 +63,7 @@ export default function HomeFeatures() {
             About Us
           </div>
           <h2 className="text-4xl md:text-5xl font-bold mb-6 text-white">
-            Welcome to <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-violet-500">CYBER HUB</span>
+            Welcome to <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-violet-500">V1GAMING</span>
           </h2>
           <p className="text-gray-400 text-lg leading-relaxed">
             We are the ultimate destination for gamers and tech enthusiasts. 

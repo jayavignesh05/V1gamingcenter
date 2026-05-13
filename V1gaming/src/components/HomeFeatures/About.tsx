@@ -19,7 +19,7 @@ export default function About() {
               <div className="absolute inset-0 bg-gradient-to-tr from-[#39FF14]/20 to-transparent z-10 mix-blend-overlay"></div>
               <Image
                 src="/hero_bg.png"
-                alt="CYBER HUB Gaming Center"
+                alt="V1GAMING Center"
                 fill
                 className="object-cover group-hover:scale-105 transition-transform duration-700 opacity-60 mix-blend-luminosity"
               />
@@ -44,7 +44,7 @@ export default function About() {
             
             <p className="text-gray-300 text-lg leading-relaxed">
               Founded on the belief that gaming is more than just a hobby—it's a lifestyle. 
-              At CYBER HUB, we've crafted an environment where professional e-sports athletes 
+              At V1gaming, we've crafted an environment where professional e-sports athletes 
               and casual gamers alike can experience the ultimate setup.
             </p>
             

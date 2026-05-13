@@ -32,7 +32,7 @@ export default function Header() {
               <Gamepad2 className="w-5 h-5 sm:w-6 sm:h-6 text-[#00FF41]" />
             </div>
             <span className="font-heading font-black text-xl sm:text-2xl tracking-widest text-white uppercase">
-              CYBER<span className="text-[#00FF41]">HUB</span>
+              V1<span className="text-[#00FF41]">GAMING</span>
             </span>
           </Link>
 

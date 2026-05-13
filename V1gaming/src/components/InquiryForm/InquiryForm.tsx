@@ -13,7 +13,7 @@ export default function InquiryForm() {
 
   const handleWhatsAppSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const text = `Hi CyberHub!%0A%0AMy name is ${formData.name}.%0APhone: ${formData.phone}%0A%0A${formData.message}`;
+    const text = `Hi V1gaming!%0A%0AMy name is ${formData.name}.%0APhone: ${formData.phone}%0A%0A${formData.message}`;
     // Use an example number for WhatsApp link
     window.open(`https://wa.me/919876543210?text=${text}`, "_blank");
   };

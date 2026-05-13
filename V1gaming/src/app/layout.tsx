@@ -16,7 +16,7 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "V1 Gaming Center | CYBER HUB",
+  title: "V1 Gaming Center",
   description: "Elite Esports and Gaming Center",
 };
 
