@@ -27,9 +27,9 @@ export default function Header() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-20">
           {/* Logo */}
-          <Link href="/" className="flex items-center gap-3 cursor-pointer group">
-            <div className="p-2 bg-[#00FF41]/10 rounded-xl border border-[#00FF41]/30 group-hover:bg-[#00FF41]/20 transition-colors">
-              <Gamepad2 className="w-6 h-6 text-[#00FF41]" />
+          <Link href="/" className="flex items-center gap-2 sm:gap-3 cursor-pointer group z-50" onClick={() => setIsMobileMenuOpen(false)}>
+            <div className="p-1.5 sm:p-2 bg-[#00FF41]/10 rounded-xl border border-[#00FF41]/30 group-hover:bg-[#00FF41]/20 transition-colors">
+              <Gamepad2 className="w-5 h-5 sm:w-6 sm:h-6 text-[#00FF41]" />
             </div>
             <span className="font-heading font-black text-xl sm:text-2xl tracking-widest text-white uppercase">
               CYBER<span className="text-[#00FF41]">HUB</span>
@@ -51,56 +51,74 @@ export default function Header() {
             ))}
           </nav>
 
-          {/* Desktop CTA & Mobile Toggle */}
-          <div className="flex items-center gap-4">
+          {/* CTA & Mobile Toggle */}
+          <div className="flex items-center gap-3 sm:gap-4 z-50">
             <Link
               href="/booking"
-              className="hidden md:flex items-center justify-center px-6 py-2.5 font-heading font-bold uppercase tracking-wider text-[#000000] bg-[#00FF41] rounded-full hover:bg-[#00FF41]/90 transition-all shadow-[0_0_20px_rgba(0,255,65,0.4)] hover:shadow-[0_0_30px_rgba(0,255,65,0.6)]"
+              className="hidden sm:flex items-center justify-center px-4 sm:px-6 py-2 sm:py-2.5 text-xs sm:text-sm font-heading font-bold uppercase tracking-wider text-[#000000] bg-[#00FF41] rounded-full hover:bg-[#00FF41]/90 transition-all shadow-[0_0_20px_rgba(0,255,65,0.4)] hover:shadow-[0_0_30px_rgba(0,255,65,0.6)]"
             >
-              Book Your Station
+              Book Station
             </Link>
-
-            {/* Mobile Menu Button */}
-            <button 
-              className="lg:hidden p-2 text-gray-400 hover:text-white"
+            
+            {/* Mobile Menu Toggle Button */}
+            <button
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              className="lg:hidden p-2 rounded-lg bg-white/5 border border-white/10 text-gray-300 hover:text-[#00FF41] transition-colors"
+              aria-label="Toggle Menu"
             >
-              {isMobileMenuOpen ? <X className="w-7 h-7" /> : <Menu className="w-7 h-7" />}
+              {isMobileMenuOpen ? <X className="w-5 h-5 sm:w-6 sm:h-6" /> : <Menu className="w-5 h-5 sm:w-6 sm:h-6" />}
             </button>
           </div>
         </div>
       </div>
 
-      {/* Mobile Menu */}
+      {/* Mobile Menu Overlay */}
       <AnimatePresence>
         {isMobileMenuOpen && (
           <motion.div
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: "auto", opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
-            className="lg:hidden overflow-hidden bg-[#111111] border-b border-white/10"
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: "auto" }}
+            exit={{ opacity: 0, height: 0 }}
+            transition={{ duration: 0.3, ease: "easeInOut" }}
+            className="lg:hidden overflow-hidden bg-[#0A0A0A]/95 backdrop-blur-3xl border-b border-white/10 shadow-2xl"
           >
-            <div className="px-4 pt-4 pb-6 space-y-4 flex flex-col">
-              {navLinks.map((link) => (
-                <Link
+            <nav className="flex flex-col px-4 sm:px-6 py-4">
+              {navLinks.map((link, i) => (
+                <motion.div
                   key={link.name}
-                  href={link.path}
-                  onClick={() => setIsMobileMenuOpen(false)}
-                  className={`px-4 py-3 rounded-lg text-sm font-bold tracking-wider uppercase transition-colors ${
-                    pathname === link.path ? "bg-[#00FF41]/10 text-[#00FF41]" : "text-gray-400 hover:bg-white/5 hover:text-white"
-                  }`}
+                  initial={{ x: -20, opacity: 0 }}
+                  animate={{ x: 0, opacity: 1 }}
+                  transition={{ delay: i * 0.05 + 0.1 }}
                 >
-                  {link.name}
-                </Link>
+                  <Link
+                    href={link.path}
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className={`block py-4 text-sm sm:text-base font-semibold tracking-wide uppercase transition-colors border-b border-white/5 ${
+                      pathname === link.path 
+                        ? "text-[#00FF41] drop-shadow-[0_0_10px_rgba(0,255,65,0.5)]" 
+                        : "text-gray-400 hover:text-[#00FF41]"
+                    }`}
+                  >
+                    {link.name}
+                  </Link>
+                </motion.div>
               ))}
-              <Link
-                href="/booking"
-                onClick={() => setIsMobileMenuOpen(false)}
-                className="mt-4 flex items-center justify-center px-6 py-3 font-heading font-bold uppercase tracking-wider text-[#000000] bg-[#00FF41] rounded-xl shadow-[0_0_15px_rgba(0,255,65,0.3)]"
+              
+              <motion.div
+                initial={{ x: -20, opacity: 0 }}
+                animate={{ x: 0, opacity: 1 }}
+                transition={{ delay: navLinks.length * 0.05 + 0.1 }}
+                className="mt-6 sm:hidden pb-4"
               >
-                Book Your Station
-              </Link>
-            </div>
+                <Link
+                  href="/booking"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className="flex items-center justify-center w-full px-6 py-3 font-heading font-bold uppercase tracking-wider text-[#000000] bg-[#00FF41] rounded-lg shadow-[0_0_20px_rgba(0,255,65,0.4)]"
+                >
+                  Book Your Station
+                </Link>
+              </motion.div>
+            </nav>
           </motion.div>
         )}
       </AnimatePresence>
