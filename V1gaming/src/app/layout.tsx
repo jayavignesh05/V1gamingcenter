@@ -1,9 +1,14 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Space_Grotesk, Inter } from "next/font/google";
 import "./globals.css";
 import Header from "@/components/Header/Header";
 import Footer from "@/components/Footer/Footer";
 import FAB from "@/components/FAB/FAB";
+
+const spaceGrotesk = Space_Grotesk({
+  variable: "--font-space-grotesk",
+  subsets: ["latin"],
+});
 
 const inter = Inter({
   variable: "--font-inter",
@@ -11,8 +16,8 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "V1 Gaming Center",
-  description: "Premium Gaming Center and Cafe",
+  title: "V1 Gaming Center | CYBER HUB",
+  description: "Elite Esports and Gaming Center",
 };
 
 export default function RootLayout({
@@ -21,8 +26,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${inter.variable} antialiased dark`}>
-      <body className="min-h-full flex flex-col bg-[#0A0A0A] text-gray-200 font-sans">
+    <html lang="en" className={`${spaceGrotesk.variable} ${inter.variable} antialiased dark scroll-smooth`}>
+      <body className="min-h-full flex flex-col bg-[#000000] text-gray-200 font-sans noise-bg">
         <Header />
         <div className="flex-1">
           {children}

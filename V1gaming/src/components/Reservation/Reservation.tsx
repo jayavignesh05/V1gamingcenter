@@ -1,8 +1,8 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Calendar, Monitor, Gamepad2, X, Loader2 } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
+import { Gamepad2, Loader2, Zap } from "lucide-react";
+import { motion } from "framer-motion";
 
 interface Slot {
   time: string;
@@ -17,14 +17,18 @@ const DEFAULT_SLOTS = [
 
 export default function Reservation() {
   const [selectedDate, setSelectedDate] = useState<string>(new Date().toISOString().split("T")[0]);
-  const [selectedSlot, setSelectedSlot] = useState<{ type: string; time: string } | null>(null);
+  const [selectedSlot, setSelectedSlot] = useState<{ type: string; time: string; price: number } | null>(null);
+  
+  const [activeTab, setActiveTab] = useState<"PC" | "PS5" | "PS4" | "Lounge">("PC");
   
   const [pcSlots, setPcSlots] = useState<Slot[]>([]);
   const [ps5Slots, setPs5Slots] = useState<Slot[]>([]);
+  const [ps4Slots, setPs4Slots] = useState<Slot[]>([]);
+  const [loungeSlots, setLoungeSlots] = useState<Slot[]>([]);
   
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  
+
   const [customerName, setCustomerName] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
 
@@ -37,6 +41,8 @@ export default function Reservation() {
       
       const pc: Slot[] = DEFAULT_SLOTS.map(time => ({ time, status: "available" }));
       const ps5: Slot[] = DEFAULT_SLOTS.map(time => ({ time, status: "available" }));
+      const ps4: Slot[] = DEFAULT_SLOTS.map(time => ({ time, status: "available" }));
+      const lounge: Slot[] = DEFAULT_SLOTS.map(time => ({ time, status: "available" }));
       
       data.forEach((booking: any) => {
         if (booking.console_id === "PC") {
@@ -45,16 +51,25 @@ export default function Reservation() {
         } else if (booking.console_id === "PS5") {
           const slot = ps5.find(s => s.time === booking.time_slot);
           if (slot) slot.status = "busy";
+        } else if (booking.console_id === "PS4") {
+          const slot = ps4.find(s => s.time === booking.time_slot);
+          if (slot) slot.status = "busy";
+        } else if (booking.console_id === "Lounge") {
+          const slot = lounge.find(s => s.time === booking.time_slot);
+          if (slot) slot.status = "busy";
         }
       });
       
       setPcSlots(pc);
       setPs5Slots(ps5);
+      setPs4Slots(ps4);
+      setLoungeSlots(lounge);
     } catch (err) {
       console.error(err);
-      // Fallback
       setPcSlots(DEFAULT_SLOTS.map(time => ({ time, status: "available" })));
       setPs5Slots(DEFAULT_SLOTS.map(time => ({ time, status: "available" })));
+      setPs4Slots(DEFAULT_SLOTS.map(time => ({ time, status: "available" })));
+      setLoungeSlots(DEFAULT_SLOTS.map(time => ({ time, status: "available" })));
     } finally {
       setIsLoading(false);
     }
@@ -62,22 +77,29 @@ export default function Reservation() {
 
   useEffect(() => {
     fetchReservations(selectedDate);
-  }, [selectedDate]);
+    setSelectedSlot(null);
+  }, [selectedDate, activeTab]);
+
+  const getPrice = (type: string) => {
+    if (type === "PC") return 80;
+    if (type === "PS5") return 100;
+    if (type === "PS4") return 60;
+    return 500;
+  };
 
   const handleSlotClick = (type: string, time: string, status: string) => {
     if (status === "available") {
-      setSelectedSlot({ type, time });
-      setCustomerName("");
-      setPhoneNumber("");
+      setSelectedSlot({ type, time, price: getPrice(type) });
     }
   };
 
   const handleReservation = async () => {
-    if (!customerName.trim() || !phoneNumber.trim() || !selectedSlot) {
-      alert("Please enter your name and phone number.");
+    if (!selectedSlot) return;
+    if (!customerName.trim() || !phoneNumber.trim()) {
+      alert("Please enter your Name and Phone Number.");
       return;
     }
-    
+
     setIsSubmitting(true);
     try {
       const res = await fetch("/api/reservations", {
@@ -95,7 +117,9 @@ export default function Reservation() {
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Failed to make reservation");
       
-      alert("Reservation successful!");
+      alert("Payment successful! Reservation Confirmed.");
+      setCustomerName("");
+      setPhoneNumber("");
       setSelectedSlot(null);
       fetchReservations(selectedDate);
     } catch (err: any) {
@@ -105,154 +129,141 @@ export default function Reservation() {
     }
   };
 
+  const currentSlots = activeTab === "PC" ? pcSlots : activeTab === "PS5" ? ps5Slots : activeTab === "PS4" ? ps4Slots : loungeSlots;
+
   return (
-    <div className="animate-in fade-in zoom-in duration-500">
-      <div className="glass-panel p-6 sm:p-10 mb-8 max-w-5xl mx-auto relative min-h-[500px]">
-        <div className="flex flex-col mb-8">
-          <h3 className="text-xl font-bold mb-4 flex items-center gap-2">
-            <Calendar className="w-5 h-5 text-cyan-400" />
-            Select Date
+    <div className="flex flex-col lg:flex-row gap-8 w-full max-w-6xl mx-auto animate-in fade-in duration-700">
+      
+      {/* Main Booking Area */}
+      <div className="w-full lg:w-2/3 glass-panel p-6 sm:p-10 relative min-h-[600px]">
+        {/* Header & Date Picker */}
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 border-b border-white/10 pb-6 gap-6">
+          <h3 className="text-2xl font-heading font-black text-white uppercase tracking-widest flex items-center gap-2">
+            <Zap className="w-6 h-6 text-[#00FF41]" /> Select Slot
           </h3>
-          <input
-            type="date"
-            className="w-full md:w-1/3 bg-[#0A0A0A] border border-white/10 rounded-lg p-3 text-white focus:outline-none focus:border-cyan-400 transition-colors"
-            value={selectedDate}
-            onChange={(e) => setSelectedDate(e.target.value)}
-          />
-        </div>
-
-        {isLoading ? (
-          <div className="absolute inset-0 flex items-center justify-center bg-[#050505]/50 backdrop-blur-sm z-10 rounded-2xl">
-            <Loader2 className="w-10 h-10 text-cyan-400 animate-spin" />
-          </div>
-        ) : null}
-
-        {/* 2-Column Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12 opacity-100 transition-opacity">
-          {/* Left: PC Slots */}
-          <div>
-            <div className="flex items-center gap-3 mb-6 pb-2 border-b border-white/10">
-              <Monitor className="w-6 h-6 text-cyan-400" />
-              <h3 className="text-2xl font-bold">PC Slots</h3>
-            </div>
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-              {pcSlots.map((slot, index) => (
-                <button
-                  key={`pc-${index}`}
-                  disabled={slot.status === "busy"}
-                  onClick={() => handleSlotClick("PC", slot.time, slot.status)}
-                  className={`py-3 px-2 rounded-lg font-medium text-sm transition-all duration-300 border ${
-                    slot.status === "available"
-                      ? "bg-[#1F2937]/50 border-cyan-500/30 text-cyan-50 hover:bg-cyan-500/20 hover:border-cyan-400 hover:shadow-[0_0_15px_rgba(6,182,212,0.4)]"
-                      : "bg-[#0A0A0A]/50 border-white/5 text-gray-600 cursor-not-allowed opacity-50"
-                  }`}
-                >
-                  {slot.time}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* Right: PS5 Slots */}
-          <div>
-            <div className="flex items-center gap-3 mb-6 pb-2 border-b border-white/10">
-              <Gamepad2 className="w-6 h-6 text-violet-400" />
-              <h3 className="text-2xl font-bold">PS5 Slots</h3>
-            </div>
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-              {ps5Slots.map((slot, index) => (
-                <button
-                  key={`ps5-${index}`}
-                  disabled={slot.status === "busy"}
-                  onClick={() => handleSlotClick("PS5", slot.time, slot.status)}
-                  className={`py-3 px-2 rounded-lg font-medium text-sm transition-all duration-300 border ${
-                    slot.status === "available"
-                      ? "bg-[#1F2937]/50 border-violet-500/30 text-violet-50 hover:bg-violet-500/20 hover:border-violet-400 hover:shadow-[0_0_15px_rgba(139,92,246,0.4)]"
-                      : "bg-[#0A0A0A]/50 border-white/5 text-gray-600 cursor-not-allowed opacity-50"
-                  }`}
-                >
-                  {slot.time}
-                </button>
-              ))}
-            </div>
+          <div className="w-full sm:w-auto">
+            <input
+              type="date"
+              className="w-full bg-[#111111] border border-white/10 rounded-xl p-3 text-white focus:outline-none focus:border-[#00FF41] font-medium"
+              value={selectedDate}
+              onChange={(e) => setSelectedDate(e.target.value)}
+            />
           </div>
         </div>
 
-        {/* Confirmation Popup */}
-        <AnimatePresence>
-          {selectedSlot && (
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.95 }}
-              className="absolute inset-0 z-20 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm rounded-2xl"
+        {/* Tabs */}
+        <div className="flex flex-wrap gap-2 mb-8">
+          {["PC", "PS5", "PS4", "Lounge"].map((tab) => (
+            <button 
+              key={tab}
+              onClick={() => setActiveTab(tab as any)}
+              className={`px-6 py-3 font-heading font-bold uppercase text-sm rounded-xl transition-all ${
+                activeTab === tab 
+                  ? "bg-[#00FF41] text-[#000000] shadow-[0_0_15px_rgba(0,255,65,0.4)]" 
+                  : "bg-[#111111] border border-white/5 text-gray-400 hover:text-white hover:border-[#00FF41]/50"
+              }`}
             >
-              <div className="bg-[#111] border border-white/10 rounded-xl p-8 max-w-sm w-full shadow-2xl relative">
-                <button 
-                  onClick={() => !isSubmitting && setSelectedSlot(null)}
-                  className="absolute top-4 right-4 text-gray-400 hover:text-white"
-                  disabled={isSubmitting}
-                >
-                  <X className="w-5 h-5" />
-                </button>
-                <h4 className="text-xl font-bold mb-6">Reservation Details</h4>
-                
-                <div className="space-y-4 mb-6">
-                  <div>
-                    <label className="block text-xs text-gray-400 mb-1 uppercase tracking-wider">Your Name</label>
-                    <input 
-                      type="text" 
-                      placeholder="John Doe"
-                      className="w-full bg-[#0A0A0A] border border-white/10 rounded-lg p-3 text-white focus:outline-none focus:border-cyan-400"
-                      value={customerName}
-                      onChange={(e) => setCustomerName(e.target.value)}
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-xs text-gray-400 mb-1 uppercase tracking-wider">Phone Number</label>
-                    <input 
-                      type="tel" 
-                      placeholder="+91 98765 43210"
-                      className="w-full bg-[#0A0A0A] border border-white/10 rounded-lg p-3 text-white focus:outline-none focus:border-cyan-400"
-                      value={phoneNumber}
-                      onChange={(e) => setPhoneNumber(e.target.value)}
-                    />
-                  </div>
-                </div>
+              {tab} Zone
+            </button>
+          ))}
+        </div>
 
-                <div className="space-y-4 mb-8 bg-[#050505] p-4 rounded-lg border border-white/5">
-                  <div className="flex justify-between border-b border-white/5 pb-2">
-                    <span className="text-gray-400">Station</span>
-                    <span className="font-bold text-white">{selectedSlot.type}</span>
-                  </div>
-                  <div className="flex justify-between border-b border-white/5 pb-2">
-                    <span className="text-gray-400">Time</span>
-                    <span className="font-bold text-white">{selectedSlot.time}</span>
-                  </div>
-                  <div className="flex justify-between border-b border-white/5 pb-2">
-                    <span className="text-gray-400">Price</span>
-                    <span className="font-bold text-cyan-400">₹200 / hr</span>
-                  </div>
+        {isLoading && (
+          <div className="absolute inset-0 flex items-center justify-center bg-[#111111]/80 backdrop-blur-sm z-10 rounded-2xl">
+            <Loader2 className="w-12 h-12 text-[#00FF41] animate-spin" />
+          </div>
+        )}
+
+        {/* Grid */}
+        <div className="grid grid-cols-3 sm:grid-cols-4 gap-4">
+          {currentSlots.map((slot, index) => {
+            const isAvailable = slot.status === "available";
+            const isSelected = selectedSlot?.time === slot.time && selectedSlot?.type === activeTab;
+            
+            return (
+              <button
+                key={`${activeTab}-${index}`}
+                disabled={!isAvailable}
+                onClick={() => handleSlotClick(activeTab, slot.time, slot.status)}
+                className={`py-4 px-2 font-bold text-sm rounded-xl transition-all border flex items-center justify-center ${
+                  isAvailable
+                    ? isSelected
+                      ? "bg-[#00D4FF]/20 border-[#00D4FF] text-[#00D4FF] shadow-[0_0_20px_rgba(0,212,255,0.5)] scale-105"
+                      : "bg-[#111111] border-[#00FF41]/30 text-white shadow-[inset_0_0_10px_rgba(0,255,65,0.1)] hover:border-[#00FF41] hover:shadow-[0_0_15px_rgba(0,255,65,0.3)]"
+                    : "bg-[#111111]/50 border-red-500/20 text-red-500/40 cursor-not-allowed"
+                }`}
+              >
+                {slot.time}
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* Booking Summary Sidebar */}
+      <div className="w-full lg:w-1/3">
+        <div className="glass-panel p-8 sticky top-24">
+          <h3 className="text-xl font-heading font-black text-white uppercase mb-6 border-b border-white/10 pb-4">
+            Booking Summary
+          </h3>
+          
+          {selectedSlot ? (
+            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="space-y-6">
+              <div className="space-y-4">
+                <div className="flex justify-between items-center text-sm">
+                  <span className="text-gray-400 font-medium">Zone</span>
+                  <span className="text-white font-bold">{selectedSlot.type} Zone</span>
                 </div>
-                
+                <div className="flex justify-between items-center text-sm">
+                  <span className="text-gray-400 font-medium">Date</span>
+                  <span className="text-white font-bold">{selectedDate}</span>
+                </div>
+                <div className="flex justify-between items-center text-sm">
+                  <span className="text-gray-400 font-medium">Time</span>
+                  <span className="text-[#00D4FF] font-bold">{selectedSlot.time}</span>
+                </div>
+              </div>
+              
+              <div className="space-y-3 pt-4 border-t border-white/10">
+                <input 
+                  type="text" 
+                  placeholder="Your Name"
+                  value={customerName}
+                  onChange={(e) => setCustomerName(e.target.value)}
+                  className="w-full bg-[#111111] border border-white/10 rounded-xl p-3 text-white focus:outline-none focus:border-[#00D4FF] text-sm"
+                />
+                <input 
+                  type="tel" 
+                  placeholder="Phone Number"
+                  value={phoneNumber}
+                  onChange={(e) => setPhoneNumber(e.target.value)}
+                  className="w-full bg-[#111111] border border-white/10 rounded-xl p-3 text-white focus:outline-none focus:border-[#00D4FF] text-sm"
+                />
+              </div>
+
+              <div className="pt-6 border-t border-white/10">
+                <div className="flex justify-between items-end mb-6">
+                  <span className="text-gray-400 font-medium">Total</span>
+                  <span className="text-4xl font-heading font-black text-[#00FF41]">₹{selectedSlot.price}</span>
+                </div>
                 <button 
-                  className="w-full bg-cyan-500 hover:bg-cyan-400 disabled:bg-cyan-500/50 text-black py-3 rounded-lg font-bold transition-all shadow-[0_0_20px_rgba(6,182,212,0.3)] flex justify-center items-center gap-2"
                   onClick={handleReservation}
                   disabled={isSubmitting}
+                  className="w-full py-4 bg-[#00D4FF] hover:bg-[#00D4FF]/90 text-[#000000] font-heading font-black uppercase tracking-widest rounded-xl transition-all shadow-[0_0_20px_rgba(0,212,255,0.4)] flex justify-center items-center gap-2"
                 >
-                  {isSubmitting ? (
-                    <>
-                      <Loader2 className="w-5 h-5 animate-spin" /> Processing...
-                    </>
-                  ) : (
-                    "Request Reservation"
-                  )}
+                  {isSubmitting ? <><Loader2 className="w-5 h-5 animate-spin" /> Processing...</> : "Confirm & Pay"}
                 </button>
               </div>
             </motion.div>
+          ) : (
+            <div className="flex flex-col items-center justify-center h-48 text-center opacity-50">
+              <Gamepad2 className="w-12 h-12 text-gray-500 mb-4" />
+              <p className="text-sm font-medium text-gray-400">Select a time slot to view your summary.</p>
+            </div>
           )}
-        </AnimatePresence>
+        </div>
       </div>
+
     </div>
   );
 }

@@ -10,38 +10,38 @@ export default function Header() {
 
   const navLinks = [
     { name: "Home", path: "/" },
-    { name: "Services", path: "/services" },
-    { name: "Reservation", path: "/#booking" },
-    { name: "Shop/Cafe", path: "/shop" },
-    { name: "Inquiry", path: "/inquiry" },
+    { name: "Gaming Zones", path: "/zones" },
+    { name: "VIP Lounge", path: "/lounge" },
+    { name: "Sales & Service", path: "/sales-service" },
+    { name: "Cafe & Shop", path: "/shop" },
   ];
 
   return (
     <motion.header
       initial={{ y: -100 }}
       animate={{ y: 0 }}
-      className="fixed top-0 left-0 right-0 z-50 bg-[#0A0A0A]/80 backdrop-blur-md border-b border-white/10"
+      className="fixed top-0 left-0 right-0 z-50 bg-[#000000]/80 backdrop-blur-xl border-b border-white/10"
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-20">
           {/* Logo */}
-          <Link href="/" className="flex items-center gap-2 cursor-pointer group">
-            <div className="p-2 bg-cyan-500/10 rounded-lg border border-cyan-500/30 group-hover:bg-cyan-500/20 transition-colors">
-              <Gamepad2 className="w-6 h-6 text-cyan-400" />
+          <Link href="/" className="flex items-center gap-3 cursor-pointer group">
+            <div className="p-2 bg-[#00FF41]/10 rounded-xl border border-[#00FF41]/30 group-hover:bg-[#00FF41]/20 transition-colors">
+              <Gamepad2 className="w-6 h-6 text-[#00FF41]" />
             </div>
-            <span className="font-bold text-xl tracking-wider text-white">
-              CYBER<span className="text-cyan-400">HUB</span>
+            <span className="font-heading font-black text-2xl tracking-widest text-white uppercase">
+              CYBER<span className="text-[#00FF41]">HUB</span>
             </span>
           </Link>
 
           {/* Nav Links */}
-          <nav className="hidden md:flex items-center gap-8">
+          <nav className="hidden lg:flex items-center gap-8">
             {navLinks.map((link) => (
               <Link 
                 key={link.name} 
                 href={link.path}
-                className={`text-sm font-medium transition-colors ${
-                  pathname === link.path ? "text-cyan-400" : "text-gray-300 hover:text-cyan-400"
+                className={`text-sm font-semibold tracking-wide uppercase transition-all hover:-translate-y-0.5 ${
+                  pathname === link.path ? "text-[#00FF41] drop-shadow-[0_0_10px_rgba(0,255,65,0.5)]" : "text-gray-400 hover:text-[#00FF41]"
                 }`}
               >
                 {link.name}
@@ -51,10 +51,10 @@ export default function Header() {
 
           {/* CTA Button */}
           <Link
-            href="/#booking"
-            className="hidden md:flex items-center justify-center px-6 py-2.5 font-bold text-black bg-cyan-400 rounded-lg hover:bg-cyan-300 transition-all shadow-[0_0_15px_rgba(6,182,212,0.4)] hover:shadow-[0_0_25px_rgba(6,182,212,0.6)]"
+            href="/booking"
+            className="hidden md:flex items-center justify-center px-6 py-2.5 font-heading font-bold uppercase tracking-wider text-[#000000] bg-[#00FF41] rounded-full hover:bg-[#00FF41]/90 transition-all shadow-[0_0_20px_rgba(0,255,65,0.4)] hover:shadow-[0_0_30px_rgba(0,255,65,0.6)]"
           >
-            Live Status
+            Book Your Station
           </Link>
         </div>
       </div>
