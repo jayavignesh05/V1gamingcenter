@@ -73,7 +73,7 @@ export default function InquiryForm() {
                 value={formData.message}
                 onChange={(e) => setFormData({ ...formData, message: e.target.value })}
                 className="w-full bg-[#0A0A0A]/80 border border-white/10 rounded-lg p-3 text-white focus:outline-none focus:border-green-500 transition-colors resize-none"
-                placeholder="I want to book the entire PC section for 4 hours..."
+                placeholder="I want to book the entire PS5 section for 4 hours..."
               ></textarea>
             </div>
 

@@ -7,7 +7,7 @@ import Link from "next/link";
 const features = [
   {
     title: "Gaming Stations",
-    description: "Book your high-end PC or PS5 station for ultimate performance.",
+    description: "Book your high-end PS5 or VR station for ultimate performance.",
     icon: <MonitorPlay className="w-8 h-8 text-[#39FF14]" />,
     href: "/booking",
     color: "from-[#39FF14]/10 to-black",
@@ -67,7 +67,7 @@ export default function HomeFeatures() {
           </h2>
           <p className="text-gray-400 text-lg leading-relaxed">
             We are the ultimate destination for gamers and tech enthusiasts. 
-            Experience unparalleled gaming performance with our top-tier PC and PS5 setups. 
+            Experience unparalleled gaming performance with our top-tier PS5 and VR setups. 
             Whether you are looking to compete in e-sports, relax in our VIP Lounge, 
             or hang out at our premium cafe, we have everything you need for the perfect session.
           </p>

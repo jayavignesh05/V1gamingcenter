@@ -15,7 +15,6 @@ export default function Header() {
     { name: "Gaming Zones", path: "/zones" },
     { name: "VIP Lounge", path: "/lounge" },
     { name: "Sales & Service", path: "/sales-service" },
-    { name: "Cafe & Shop", path: "/shop" },
   ];
 
   return (

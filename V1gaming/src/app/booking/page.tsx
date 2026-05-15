@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import Reservation from "@/components/Reservation/Reservation";
 
 export default function Booking() {
@@ -11,7 +12,9 @@ export default function Booking() {
           Select your zone, date, and preferred time slot below.
         </p>
       </div>
-      <Reservation />
+      <Suspense fallback={null}>
+        <Reservation />
+      </Suspense>
     </main>
   );
 }

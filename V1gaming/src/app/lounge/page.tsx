@@ -42,19 +42,36 @@ export default function LoungePage() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 -mt-16">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-12 mb-24">
           {/* Pricing & CTA */}
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="glass-card p-10 flex flex-col justify-center items-center text-center border-t-4 border-[#FF006E]"
-          >
-            <h2 className="text-3xl font-heading font-black text-white uppercase mb-2">Premium Pricing</h2>
-            <div className="text-5xl font-heading font-black text-[#FF006E] mb-2 drop-shadow-[0_0_15px_rgba(255,0,110,0.4)]">₹500<span className="text-xl text-gray-500">/hr</span></div>
-            <p className="text-gray-400 font-medium uppercase tracking-widest text-sm mb-8">Per Person</p>
-            
-            <Link href="/booking" className="w-full py-4 bg-[#FF006E] hover:bg-[#FF006E]/90 text-white font-heading font-bold uppercase tracking-widest rounded-xl transition-all shadow-[0_0_20px_rgba(255,0,110,0.4)] hover:shadow-[0_0_30px_rgba(255,0,110,0.6)]">
-              Reserve The Lounge
-            </Link>
-          </motion.div>
+          <div className="flex flex-col gap-6">
+            <motion.div 
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="glass-card p-8 flex flex-col justify-center items-center text-center border-t-4 border-[#FF006E]"
+            >
+              <h2 className="text-2xl font-heading font-black text-white uppercase mb-2">Private Lounge PS5</h2>
+              <div className="text-4xl font-heading font-black text-[#FF006E] mb-1 drop-shadow-[0_0_15px_rgba(255,0,110,0.4)]">₹400<span className="text-lg text-gray-500">/hr</span></div>
+              <p className="text-gray-400 font-medium uppercase tracking-widest text-xs mb-6">1 Player (₹200/hr each for 4 Players)</p>
+              
+              <Link href="/booking?zone=Pvt%20Lounge" className="w-full py-3 bg-[#FF006E] hover:bg-[#FF006E]/90 text-white font-heading font-bold uppercase tracking-widest text-sm rounded-xl transition-all shadow-[0_0_20px_rgba(255,0,110,0.4)] hover:shadow-[0_0_30px_rgba(255,0,110,0.6)]">
+                Reserve Private Lounge
+              </Link>
+            </motion.div>
+
+            <motion.div 
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.1 }}
+              className="glass-card p-8 flex flex-col justify-center items-center text-center border-t-4 border-[#9D00FF]"
+            >
+              <h2 className="text-2xl font-heading font-black text-white uppercase mb-2">Cele Lounge (Game + OTT)</h2>
+              <div className="text-4xl font-heading font-black text-[#9D00FF] mb-1 drop-shadow-[0_0_15px_rgba(157,0,255,0.4)]">₹3,000<span className="text-lg text-gray-500">/hr</span></div>
+              <p className="text-gray-400 font-medium uppercase tracking-widest text-xs mb-6">+ ₹2,000 Add-on Hrs (Up to 12 Person)</p>
+              
+              <Link href="/booking?zone=Cele%20Lounge" className="w-full py-3 bg-[#9D00FF] hover:bg-[#9D00FF]/90 text-white font-heading font-bold uppercase tracking-widest text-sm rounded-xl transition-all shadow-[0_0_20px_rgba(157,0,255,0.4)] hover:shadow-[0_0_30px_rgba(157,0,255,0.6)]">
+                Reserve Cele Lounge
+              </Link>
+            </motion.div>
+          </div>
 
           {/* Features */}
           <motion.div 

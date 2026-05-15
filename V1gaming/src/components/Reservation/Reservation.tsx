@@ -1,7 +1,8 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Gamepad2, Loader2, Zap } from "lucide-react";
+import { useSearchParams } from "next/navigation";
+import { Gamepad2, Loader2, Zap, CheckCircle2, AlertCircle, Users } from "lucide-react";
 import { motion } from "framer-motion";
 
 interface Slot {
@@ -17,14 +18,27 @@ const DEFAULT_SLOTS = [
 
 export default function Reservation() {
   const [selectedDate, setSelectedDate] = useState<string>(new Date().toISOString().split("T")[0]);
-  const [selectedSlot, setSelectedSlot] = useState<{ type: string; time: string; price: number } | null>(null);
+  const [selectedSlots, setSelectedSlots] = useState<{ type: string; time: string }[]>([]);
+  const [players, setPlayers] = useState(1);
+  const [toast, setToast] = useState<{message: string, type: 'success' | 'error'} | null>(null);
   
-  const [activeTab, setActiveTab] = useState<"PC" | "PS5" | "PS4" | "Lounge">("PC");
+  const searchParams = useSearchParams();
+  const [activeTab, setActiveTab] = useState<"PS5" | "PS4" | "Simulation" | "VR" | "Pvt Lounge" | "Cele Lounge">("PS5");
+
+  useEffect(() => {
+    const zone = searchParams.get("zone");
+    const validTabs = ["PS5", "PS4", "Simulation", "VR", "Pvt Lounge", "Cele Lounge"];
+    if (zone && validTabs.includes(zone)) {
+      setActiveTab(zone as any);
+    }
+  }, [searchParams]);
   
-  const [pcSlots, setPcSlots] = useState<Slot[]>([]);
   const [ps5Slots, setPs5Slots] = useState<Slot[]>([]);
   const [ps4Slots, setPs4Slots] = useState<Slot[]>([]);
-  const [loungeSlots, setLoungeSlots] = useState<Slot[]>([]);
+  const [simulationSlots, setSimulationSlots] = useState<Slot[]>([]);
+  const [vrSlots, setVrSlots] = useState<Slot[]>([]);
+  const [pvtLoungeSlots, setPvtLoungeSlots] = useState<Slot[]>([]);
+  const [celeLoungeSlots, setCeleLoungeSlots] = useState<Slot[]>([]);
   
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -39,37 +53,49 @@ export default function Reservation() {
       if (!res.ok) throw new Error("Failed to fetch");
       const data = await res.json();
       
-      const pc: Slot[] = DEFAULT_SLOTS.map(time => ({ time, status: "available" }));
       const ps5: Slot[] = DEFAULT_SLOTS.map(time => ({ time, status: "available" }));
       const ps4: Slot[] = DEFAULT_SLOTS.map(time => ({ time, status: "available" }));
-      const lounge: Slot[] = DEFAULT_SLOTS.map(time => ({ time, status: "available" }));
+      const simulation: Slot[] = DEFAULT_SLOTS.map(time => ({ time, status: "available" }));
+      const vr: Slot[] = DEFAULT_SLOTS.map(time => ({ time, status: "available" }));
+      const pvtLounge: Slot[] = DEFAULT_SLOTS.map(time => ({ time, status: "available" }));
+      const celeLounge: Slot[] = DEFAULT_SLOTS.map(time => ({ time, status: "available" }));
       
       data.forEach((booking: any) => {
-        if (booking.console_id === "PC") {
-          const slot = pc.find(s => s.time === booking.time_slot);
-          if (slot) slot.status = "busy";
-        } else if (booking.console_id === "PS5") {
+        if (booking.console_id === "PS5") {
           const slot = ps5.find(s => s.time === booking.time_slot);
           if (slot) slot.status = "busy";
         } else if (booking.console_id === "PS4") {
           const slot = ps4.find(s => s.time === booking.time_slot);
           if (slot) slot.status = "busy";
-        } else if (booking.console_id === "Lounge") {
-          const slot = lounge.find(s => s.time === booking.time_slot);
+        } else if (booking.console_id === "Simulation") {
+          const slot = simulation.find(s => s.time === booking.time_slot);
+          if (slot) slot.status = "busy";
+        } else if (booking.console_id === "VR") {
+          const slot = vr.find(s => s.time === booking.time_slot);
+          if (slot) slot.status = "busy";
+        } else if (booking.console_id === "Pvt Lounge") {
+          const slot = pvtLounge.find(s => s.time === booking.time_slot);
+          if (slot) slot.status = "busy";
+        } else if (booking.console_id === "Cele Lounge") {
+          const slot = celeLounge.find(s => s.time === booking.time_slot);
           if (slot) slot.status = "busy";
         }
       });
       
-      setPcSlots(pc);
       setPs5Slots(ps5);
       setPs4Slots(ps4);
-      setLoungeSlots(lounge);
+      setSimulationSlots(simulation);
+      setVrSlots(vr);
+      setPvtLoungeSlots(pvtLounge);
+      setCeleLoungeSlots(celeLounge);
     } catch (err) {
       console.error(err);
-      setPcSlots(DEFAULT_SLOTS.map(time => ({ time, status: "available" })));
       setPs5Slots(DEFAULT_SLOTS.map(time => ({ time, status: "available" })));
       setPs4Slots(DEFAULT_SLOTS.map(time => ({ time, status: "available" })));
-      setLoungeSlots(DEFAULT_SLOTS.map(time => ({ time, status: "available" })));
+      setSimulationSlots(DEFAULT_SLOTS.map(time => ({ time, status: "available" })));
+      setVrSlots(DEFAULT_SLOTS.map(time => ({ time, status: "available" })));
+      setPvtLoungeSlots(DEFAULT_SLOTS.map(time => ({ time, status: "available" })));
+      setCeleLoungeSlots(DEFAULT_SLOTS.map(time => ({ time, status: "available" })));
     } finally {
       setIsLoading(false);
     }
@@ -77,26 +103,61 @@ export default function Reservation() {
 
   useEffect(() => {
     fetchReservations(selectedDate);
-    setSelectedSlot(null);
+    setSelectedSlots([]);
+    setPlayers(1);
   }, [selectedDate, activeTab]);
 
-  const getPrice = (type: string) => {
-    if (type === "PC") return 80;
-    if (type === "PS5") return 100;
-    if (type === "PS4") return 60;
-    return 500;
+  useEffect(() => {
+    if (toast) {
+      const timer = setTimeout(() => setToast(null), 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [toast]);
+
+  const getPrice = (type: string, numPlayers: number, numHours: number) => {
+    if (numHours === 0) return 0;
+    
+    let total = 0;
+    if (type === "PS5") {
+      const rate = numPlayers === 1 ? 199 : 150 * numPlayers;
+      total = rate * numHours;
+    } else if (type === "PS4") {
+      const rate = numPlayers === 1 ? 149 : 100 * numPlayers;
+      total = rate * numHours;
+    } else if (type === "Pvt Lounge") {
+      const rate = numPlayers === 1 ? 400 : 200 * numPlayers;
+      total = rate * numHours;
+    } else if (type === "Cele Lounge") {
+      // 1st hour: 3000 for 1st person, 2000 each for others
+      const firstHourRate = numPlayers === 1 ? 3000 : 2000 * numPlayers;
+      // Add-on hours: 2000 flat per hour (based on "2,000 ADD ON HOURS" in image)
+      total = firstHourRate + (numHours - 1) * 2000;
+    } else if (type === "Simulation") {
+      total = 350 * numPlayers * numHours;
+    } else if (type === "VR") {
+      total = 200 * numPlayers * numHours;
+    }
+    
+    return total;
   };
 
   const handleSlotClick = (type: string, time: string, status: string) => {
     if (status === "available") {
-      setSelectedSlot({ type, time, price: getPrice(type) });
+      setSelectedSlots(prev => {
+        const exists = prev.find(s => s.time === time && s.type === type);
+        if (exists) {
+          return prev.filter(s => !(s.time === time && s.type === type));
+        } else {
+          return [...prev, { type, time }];
+        }
+      });
     }
   };
 
   const handleReservation = async () => {
-    if (!selectedSlot) return;
+    if (selectedSlots.length === 0) return;
     if (!customerName.trim() || !phoneNumber.trim()) {
-      alert("Please enter your Name and Phone Number.");
+      setToast({ message: "Please enter your Name and Phone Number.", type: "error" });
       return;
     }
 
@@ -109,31 +170,50 @@ export default function Reservation() {
           customer_name: customerName,
           phone_number: phoneNumber,
           booking_date: selectedDate,
-          time_slot: selectedSlot.time,
-          console_id: selectedSlot.type,
+          time_slots: selectedSlots.map(s => s.time),
+          console_id: activeTab,
+          players: players
         }),
       });
       
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Failed to make reservation");
       
-      alert("Payment successful! Reservation Confirmed.");
+      setToast({ message: "Payment successful! Reservations Confirmed.", type: "success" });
       setCustomerName("");
       setPhoneNumber("");
-      setSelectedSlot(null);
+      setSelectedSlots([]);
+      setPlayers(1);
       fetchReservations(selectedDate);
     } catch (err: any) {
-      alert(err.message || "An error occurred");
+      setToast({ message: err.message || "An error occurred", type: "error" });
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  const currentSlots = activeTab === "PC" ? pcSlots : activeTab === "PS5" ? ps5Slots : activeTab === "PS4" ? ps4Slots : loungeSlots;
+  const currentSlots = activeTab === "PS5" ? ps5Slots : activeTab === "PS4" ? ps4Slots : activeTab === "Simulation" ? simulationSlots : activeTab === "VR" ? vrSlots : activeTab === "Pvt Lounge" ? pvtLoungeSlots : celeLoungeSlots;
 
   return (
-    <div className="flex flex-col lg:flex-row gap-8 w-full max-w-6xl mx-auto animate-in fade-in duration-700">
+    <div className="flex flex-col lg:flex-row gap-8 w-full max-w-6xl mx-auto animate-in fade-in duration-700 relative">
       
+      {/* Toast Notification */}
+      {toast && (
+        <motion.div 
+          initial={{ opacity: 0, y: -20 }} 
+          animate={{ opacity: 1, y: 0 }} 
+          exit={{ opacity: 0, y: -20 }}
+          className={`fixed top-24 left-1/2 -translate-x-1/2 z-[100] flex items-center gap-3 px-6 py-4 rounded-xl shadow-2xl border backdrop-blur-md font-medium text-white ${
+            toast.type === 'success' 
+              ? 'bg-[#00FF41]/20 border-[#00FF41]/50 shadow-[0_0_30px_rgba(0,255,65,0.3)]' 
+              : 'bg-red-500/20 border-red-500/50 shadow-[0_0_30px_rgba(239,68,68,0.3)]'
+          }`}
+        >
+          {toast.type === 'success' ? <CheckCircle2 className="text-[#00FF41] w-6 h-6" /> : <AlertCircle className="text-red-400 w-6 h-6" />}
+          {toast.message}
+        </motion.div>
+      )}
+
       {/* Main Booking Area */}
       <div className="w-full lg:w-2/3 glass-panel p-6 sm:p-10 relative min-h-[600px]">
         {/* Header & Date Picker */}
@@ -144,7 +224,10 @@ export default function Reservation() {
           <div className="w-full sm:w-auto">
             <input
               type="date"
-              className="w-full bg-[#111111] border border-white/10 rounded-xl p-3 text-white focus:outline-none focus:border-[#00FF41] font-medium"
+              min={new Date().toISOString().split("T")[0]}
+              onKeyDown={(e) => e.preventDefault()}
+              onClick={(e) => (e.target as any).showPicker?.()}
+              className="w-full bg-[#111111] border border-white/10 rounded-xl p-3 text-white focus:outline-none focus:border-[#00FF41] font-medium cursor-pointer"
               value={selectedDate}
               onChange={(e) => setSelectedDate(e.target.value)}
             />
@@ -153,7 +236,7 @@ export default function Reservation() {
 
         {/* Tabs */}
         <div className="flex flex-wrap gap-2 mb-8">
-          {["PC", "PS5", "PS4", "Lounge"].map((tab) => (
+          {["PS5", "PS4", "Simulation", "VR", "Pvt Lounge", "Cele Lounge"].map((tab) => (
             <button 
               key={tab}
               onClick={() => setActiveTab(tab as any)}
@@ -178,7 +261,7 @@ export default function Reservation() {
         <div className="grid grid-cols-3 sm:grid-cols-4 gap-4">
           {currentSlots.map((slot, index) => {
             const isAvailable = slot.status === "available";
-            const isSelected = selectedSlot?.time === slot.time && selectedSlot?.type === activeTab;
+            const isSelected = selectedSlots.some(s => s.time === slot.time && s.type === activeTab);
             
             return (
               <button
@@ -207,20 +290,41 @@ export default function Reservation() {
             Booking Summary
           </h3>
           
-          {selectedSlot ? (
+          {selectedSlots.length > 0 ? (
             <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="space-y-6">
               <div className="space-y-4">
                 <div className="flex justify-between items-center text-sm">
                   <span className="text-gray-400 font-medium">Zone</span>
-                  <span className="text-white font-bold">{selectedSlot.type} Zone</span>
+                  <span className="text-white font-bold">{activeTab} Zone</span>
                 </div>
                 <div className="flex justify-between items-center text-sm">
                   <span className="text-gray-400 font-medium">Date</span>
                   <span className="text-white font-bold">{selectedDate}</span>
                 </div>
-                <div className="flex justify-between items-center text-sm">
-                  <span className="text-gray-400 font-medium">Time</span>
-                  <span className="text-[#00D4FF] font-bold">{selectedSlot.time}</span>
+                <div className="flex flex-col gap-2 text-sm">
+                  <span className="text-gray-400 font-medium">Selected Slots</span>
+                  <div className="flex flex-wrap gap-2">
+                    {selectedSlots.map((s, i) => (
+                      <span key={i} className="px-2 py-1 bg-[#00D4FF]/20 text-[#00D4FF] rounded-md text-xs font-bold border border-[#00D4FF]/30">
+                        {s.time}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+                
+                <div className="flex flex-col gap-3 pt-4">
+                  <span className="text-gray-400 font-medium flex items-center gap-2"><Users className="w-4 h-4" /> Select Number of Players</span>
+                  <div className="flex flex-wrap items-center gap-2 bg-[#111111] p-2 rounded-xl border border-white/10">
+                    {Array.from({ length: activeTab === "Cele Lounge" ? 12 : 4 }, (_, i) => i + 1).map(num => (
+                      <button
+                        key={num}
+                        onClick={() => setPlayers(num)}
+                        className={`w-10 h-10 rounded-lg flex items-center justify-center font-bold transition-all ${players === num ? "bg-[#00D4FF] text-[#000000] shadow-[0_0_15px_rgba(0,212,255,0.4)]" : "text-gray-400 hover:text-white hover:bg-white/5 border border-white/5"}`}
+                      >
+                        {num}
+                      </button>
+                    ))}
+                  </div>
                 </div>
               </div>
               
@@ -243,8 +347,8 @@ export default function Reservation() {
 
               <div className="pt-6 border-t border-white/10">
                 <div className="flex justify-between items-end mb-6">
-                  <span className="text-gray-400 font-medium">Total</span>
-                  <span className="text-4xl font-heading font-black text-[#00FF41]">₹{selectedSlot.price}</span>
+                  <span className="text-gray-400 font-medium">Total ({selectedSlots.length} {selectedSlots.length === 1 ? 'Hour' : 'Hours'})</span>
+                  <span className="text-4xl font-heading font-black text-[#00FF41]">₹{getPrice(activeTab, players, selectedSlots.length)}</span>
                 </div>
                 <button 
                   onClick={handleReservation}

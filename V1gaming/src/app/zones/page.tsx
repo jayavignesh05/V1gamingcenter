@@ -1,25 +1,16 @@
 "use client";
 
-import { Monitor, Gamepad2, Zap } from "lucide-react";
+import { Gamepad2, Zap, Car, Glasses } from "lucide-react";
 import Link from "next/link";
 import { motion } from "framer-motion";
 
 export default function GamingZones() {
   const zones = [
     {
-      title: "PC Zone",
-      price: "₹80/hr",
-      description: "Ultimate competitive setup.",
-      specs: ["RTX 4090 GPU", "Intel Core i9 14th Gen", "360Hz 1ms Esports Monitors", "Mechanical Keyboards & Pro Mice"],
-      icon: <Monitor className="w-12 h-12 text-[#00D4FF]" />,
-      color: "border-[#00D4FF]",
-      bg: "hover:bg-[#00D4FF]/5",
-      btn: "bg-[#00D4FF] hover:bg-[#00D4FF]/90 text-black shadow-[0_0_20px_rgba(0,212,255,0.4)]",
-    },
-    {
+      tab: "PS5",
       title: "PS5 Zone",
-      price: "₹100/hr",
-      description: "Next-gen immersive gameplay.",
+      price: "₹199/hr",
+      description: "Next-gen immersive gameplay. (₹150/hr for 4 Players)",
       specs: ["PlayStation 5 Console", "65-inch 4K OLED HDR TVs", "DualSense Wireless Controllers", "Pulse 3D Wireless Headset"],
       icon: <Gamepad2 className="w-12 h-12 text-[#00FF41]" />,
       color: "border-[#00FF41]",
@@ -27,14 +18,37 @@ export default function GamingZones() {
       btn: "bg-[#00FF41] hover:bg-[#00FF41]/90 text-black shadow-[0_0_20px_rgba(0,255,65,0.4)]",
     },
     {
+      tab: "PS4",
       title: "PS4 Zone",
-      price: "₹60/hr",
-      description: "Budget-friendly classic gaming.",
+      price: "₹149/hr",
+      description: "Budget-friendly classic gaming. (₹100/hr for 4 Players)",
       specs: ["PlayStation 4 Pro Console", "55-inch 4K Displays", "DualShock 4 Controllers", "Massive Classic Game Library"],
       icon: <Zap className="w-12 h-12 text-[#FF006E]" />,
       color: "border-[#FF006E]",
       bg: "hover:bg-[#FF006E]/5",
       btn: "bg-[#FF006E] hover:bg-[#FF006E]/90 text-white shadow-[0_0_20px_rgba(255,0,110,0.4)]",
+    },
+    {
+      tab: "Simulation",
+      title: "Simulation Zone",
+      price: "₹350/hr",
+      description: "Immersive racing and flight simulation rigs.",
+      specs: ["Direct Drive Steering Wheels", "Motion Simulator Seats", "Ultra-wide Curved Monitors", "Pro Flight Yoke Systems"],
+      icon: <Car className="w-12 h-12 text-[#FFB000]" />,
+      color: "border-[#FFB000]",
+      bg: "hover:bg-[#FFB000]/5",
+      btn: "bg-[#FFB000] hover:bg-[#FFB000]/90 text-black shadow-[0_0_20px_rgba(255,176,0,0.4)]",
+    },
+    {
+      tab: "VR",
+      title: "VR Zone",
+      price: "₹200/hr",
+      description: "Full-motion virtual reality experience.",
+      specs: ["Meta Quest 3 / PSVR 2", "Haptic Feedback Suits", "Omnidirectional Treadmills", "Extensive VR Game Library"],
+      icon: <Glasses className="w-12 h-12 text-[#9D00FF]" />,
+      color: "border-[#9D00FF]",
+      bg: "hover:bg-[#9D00FF]/5",
+      btn: "bg-[#9D00FF] hover:bg-[#9D00FF]/90 text-white shadow-[0_0_20px_rgba(157,0,255,0.4)]",
     }
   ];
 
@@ -45,7 +59,7 @@ export default function GamingZones() {
           GAMING <span className="text-[#00D4FF]">ZONES</span>
         </h1>
         <p className="text-gray-400 max-w-2xl mx-auto font-medium">
-          Choose your battleground. From 360Hz competitive PC rigs to immersive 4K OLED PS5 setups.
+          Choose your battleground. From immersive 4K OLED PS5 setups to full-motion VR experiences.
         </p>
       </div>
 
@@ -82,7 +96,7 @@ export default function GamingZones() {
             </div>
             
             <Link 
-              href="/booking" 
+              href={`/booking?zone=${encodeURIComponent(zone.tab)}`}
               className={`w-full py-4 rounded-xl font-heading font-bold uppercase tracking-widest text-center transition-all ${zone.btn}`}
             >
               BOOK NOW

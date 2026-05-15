@@ -49,8 +49,8 @@ export default function About() {
             </p>
             
             <p className="text-gray-400 text-lg leading-relaxed">
-              Equipped with cutting-edge PCs featuring RTX 4090s, high-refresh-rate monitors, 
-              and premium PS5 stations, we ensure zero bottlenecks. Add to that a vibrant 
+              Equipped with premium PS5 stations, fully immersive VR rigs, 
+              and high-end simulation setups, we ensure zero bottlenecks. Add to that a vibrant 
               community and a dedicated staff, and you get a destination that elevates your game.
             </p>
 

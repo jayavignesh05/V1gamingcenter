@@ -2,21 +2,20 @@
 
 import { motion } from "framer-motion";
 import Link from "next/link";
-import { MonitorPlay, Gamepad2, Crown, Coffee, ArrowRight } from "lucide-react";
+import { Car, Gamepad2, Crown, Coffee, ArrowRight } from "lucide-react";
 
 export default function Home() {
   const stats = [
     { value: "50+", label: "Stations" },
-    { value: "PC & PS5", label: "Zones" },
+    { value: "PS5 & VR", label: "Zones" },
     { value: "24/7", label: "Open" },
     { value: "T Nagar", label: "Chennai" },
   ];
 
   const services = [
-    { title: "PC Gaming Zone", icon: <MonitorPlay className="w-8 h-8 text-[#00D4FF]" />, href: "/zones", border: "hover:border-[#00D4FF] hover:shadow-[0_0_20px_rgba(0,212,255,0.4)]" },
+    { title: "Simulation Zone", icon: <Car className="w-8 h-8 text-[#00D4FF]" />, href: "/zones", border: "hover:border-[#00D4FF] hover:shadow-[0_0_20px_rgba(0,212,255,0.4)]" },
     { title: "PS5 & PS4 Zone", icon: <Gamepad2 className="w-8 h-8 text-[#00FF41]" />, href: "/zones", border: "hover:border-[#00FF41] hover:shadow-[0_0_20px_rgba(0,255,65,0.4)]" },
     { title: "VIP Lounge", icon: <Crown className="w-8 h-8 text-[#FF006E]" />, href: "/lounge", border: "hover:border-[#FF006E] hover:shadow-[0_0_20px_rgba(255,0,110,0.4)]" },
-    { title: "Cafe & Gear Shop", icon: <Coffee className="w-8 h-8 text-yellow-400" />, href: "/shop", border: "hover:border-yellow-400 hover:shadow-[0_0_20px_rgba(250,204,21,0.4)]" },
   ];
 
   return (
@@ -73,7 +72,7 @@ export default function Home() {
             <p className="text-gray-400 max-w-2xl mx-auto">Experience the highest tier of competitive gaming.</p>
           </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {services.map((service, idx) => (
               <Link href={service.href} key={idx} className={`glass-card p-8 flex flex-col items-center text-center group ${service.border}`}>
                 <div className="mb-6 p-4 bg-[#000000]/80 rounded-2xl border border-white/5 group-hover:scale-110 transition-transform shadow-inner">

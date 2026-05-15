@@ -19,7 +19,7 @@ export default function Footer() {
               The ultimate premium esports lounge and gaming center in Chennai.
             </p>
             <div className="flex items-center gap-4">
-              <a href="#" className="w-10 h-10 rounded-full bg-[#000000] flex items-center justify-center text-gray-400 hover:text-[#00FF41] hover:shadow-[0_0_15px_rgba(0,255,65,0.3)] transition-all">
+              <a href="https://www.instagram.com/v1gamingcafe/" target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full bg-[#000000] flex items-center justify-center text-gray-400 hover:text-[#00FF41] hover:shadow-[0_0_15px_rgba(0,255,65,0.3)] transition-all">
                 <Camera className="w-5 h-5" />
               </a>
               <a href="#" className="w-10 h-10 rounded-full bg-[#000000] flex items-center justify-center text-gray-400 hover:text-[#FF006E] hover:shadow-[0_0_15px_rgba(255,0,110,0.3)] transition-all">
@@ -32,7 +32,7 @@ export default function Footer() {
           <div>
             <h4 className="font-heading font-black text-white uppercase mb-6 tracking-widest">Quick Links</h4>
             <ul className="space-y-3">
-              {["Home", "Gaming Zones", "VIP Lounge", "Sales & Service", "Cafe & Shop"].map((link) => (
+              {["Home", "Gaming Zones", "VIP Lounge", "Sales & Service"].map((link) => (
                 <li key={link}>
                   <Link href="#" className="text-gray-400 hover:text-[#00FF41] text-sm font-medium transition-colors">
                     {link}
@@ -48,15 +48,24 @@ export default function Footer() {
             <ul className="space-y-4">
               <li className="flex items-start gap-3 text-gray-400 text-sm font-medium">
                 <MapPin className="w-5 h-5 text-[#00D4FF] flex-shrink-0" />
-                <span>123 Gaming Street, T Nagar,<br />Chennai, Tamil Nadu 600017</span>
+                <a 
+                  href="https://maps.app.goo.gl/EMnAZ5Kd7Yp7dCUr8" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="hover:text-[#00D4FF] transition-colors"
+                >
+                  98, 1st Floor, Red Hills Rd, Akbar Nagar,<br />
+                  Kalpalayam, Chennai, Tamil Nadu 600099<br />
+                  <span className="text-xs text-gray-500 font-bold uppercase">(Landmark: Lenskart Building)</span>
+                </a>
               </li>
               <li className="flex items-center gap-3 text-gray-400 text-sm font-medium">
                 <Phone className="w-5 h-5 text-[#00FF41] flex-shrink-0" />
-                <span>+91 98765 43210</span>
+                <a href="tel:+919092095300" className="hover:text-[#00FF41] transition-colors">+91 90920 95300</a>
               </li>
               <li className="flex items-center gap-3 text-gray-400 text-sm font-medium">
                 <Mail className="w-5 h-5 text-[#FF006E] flex-shrink-0" />
-                <span>hello@v1gaming.in</span>
+                <a href="mailto:V1gamingcafevv@gmail.com" className="hover:text-[#FF006E] transition-colors">V1gamingcafevv@gmail.com</a>
               </li>
             </ul>
           </div>
