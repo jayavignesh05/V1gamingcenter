@@ -64,7 +64,7 @@ export default function Home() {
             Chennai&apos;s #1 Esports Lounge
           </motion.div>
 
-          <motion.h1 {...fadeUp(0.25)} className="text-6xl md:text-8xl lg:text-9xl font-heading font-black tracking-tighter mb-5 text-white drop-shadow-[0_0_30px_rgba(255,255,255,0.2)] leading-none uppercase">
+          <motion.h1 {...fadeUp(0.25)} className="text-[2.5rem] leading-[0.9] xs:text-5xl sm:text-6xl md:text-8xl lg:text-9xl font-heading font-black tracking-tighter mb-5 text-white drop-shadow-[0_0_30px_rgba(255,255,255,0.2)] uppercase px-2">
             LEVEL UP <br />
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#DC2626] via-[#FF4444] to-[#FF006E]">YOUR GAME</span>
           </motion.h1>
@@ -267,11 +267,11 @@ export default function Home() {
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-[#DC2626]/10 rounded-full blur-[120px]" />
 
         <motion.div initial={{ opacity: 0, y: 32 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.7, ease: easeCustom }} className="relative z-10 max-w-3xl mx-auto text-center px-4">
-          <h2 className="text-5xl md:text-7xl font-heading font-black text-white uppercase tracking-tighter mb-4 leading-none">
+          <h2 className="text-4xl sm:text-5xl md:text-7xl font-heading font-black text-white uppercase tracking-tighter mb-4 leading-none">
             READY TO <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#DC2626] to-[#FF006E]">PLAY?</span>
           </h2>
-          <p className="text-gray-400 text-lg mb-10">Book your station now and experience gaming like never before.</p>
-          <Link href="/booking" className="group inline-flex items-center gap-3 px-12 py-5 bg-[#DC2626] text-white font-heading font-black uppercase tracking-widest rounded-full hover:scale-105 active:scale-95 transition-all shadow-[0_0_40px_rgba(220,38,38,0.5)] hover:shadow-[0_0_60px_rgba(220,38,38,0.8)] text-lg">
+          <p className="text-gray-400 text-base sm:text-lg mb-10">Book your station now and experience gaming like never before.</p>
+          <Link href="/booking" className="group inline-flex items-center gap-3 px-8 sm:px-12 py-4 sm:py-5 bg-[#DC2626] text-white font-heading font-black uppercase tracking-widest rounded-full hover:scale-105 active:scale-95 transition-all shadow-[0_0_40px_rgba(220,38,38,0.5)] hover:shadow-[0_0_60px_rgba(220,38,38,0.8)] text-base sm:text-lg">
             Book Now <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
           </Link>
         </motion.div>

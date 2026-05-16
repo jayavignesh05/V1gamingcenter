@@ -331,7 +331,7 @@ export default function Reservation() {
         )}
 
         {/* Grid */}
-        <div className="grid grid-cols-3 sm:grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 xs:grid-cols-3 sm:grid-cols-4 gap-3 sm:gap-4">
           {currentSlots.map((slot, index) => {
             const isAvailable = slot.status === "available";
             const isSelected = selectedSlots.some(s => s.time === slot.time && s.type === activeTab);
@@ -363,7 +363,7 @@ export default function Reservation() {
 
       {/* Booking Summary Sidebar */}
       <div className="w-full lg:w-1/3">
-        <div className="glass-panel p-8 sticky top-24">
+        <div className="glass-panel p-6 sm:p-8 sticky top-24 lg:top-28">
           <h3 className="text-xl font-heading font-black text-white uppercase mb-6 border-b border-white/10 pb-4">
             Booking Summary
           </h3>
