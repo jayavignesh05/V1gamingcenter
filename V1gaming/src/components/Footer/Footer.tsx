@@ -1,6 +1,7 @@
-import { Camera, PlayCircle, MapPin, Mail, Phone, Gamepad2 } from "lucide-react";
+import { MapPin, Mail, Phone, Gamepad2 } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
+import { FaInstagram, FaWhatsapp } from "react-icons/fa";
 
 export default function Footer() {
   return (
@@ -27,10 +28,10 @@ export default function Footer() {
             </p>
             <div className="flex items-center gap-4">
               <a href="https://www.instagram.com/v1gamingcafe/" target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full bg-[#000000] flex items-center justify-center text-gray-400 hover:text-[#DC2626] hover:shadow-[0_0_15px_rgba(220,38,38,0.3)] transition-all">
-                <Camera className="w-5 h-5" />
+                <FaInstagram className="w-5 h-5" />
               </a>
-              <a href="#" className="w-10 h-10 rounded-full bg-[#000000] flex items-center justify-center text-gray-400 hover:text-[#FF006E] hover:shadow-[0_0_15px_rgba(255,0,110,0.3)] transition-all">
-                <PlayCircle className="w-5 h-5" />
+              <a href="https://wa.me/919092095300" target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full bg-[#000000] flex items-center justify-center text-gray-400 hover:text-[#25D366] hover:shadow-[0_0_15px_rgba(37,211,102,0.3)] transition-all">
+                <FaWhatsapp className="w-5 h-5" />
               </a>
             </div>
           </div>

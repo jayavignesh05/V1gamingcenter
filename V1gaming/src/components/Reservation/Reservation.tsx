@@ -2,9 +2,9 @@
 
 import { useState, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
-import { Gamepad2, Loader2, Zap, CheckCircle2, AlertCircle, Users } from "lucide-react";
+import { Gamepad2, Loader2, Zap, CheckCircle2, AlertCircle, Users, Calendar } from "lucide-react";
 import { motion } from "framer-motion";
-import { decryptClient } from "@/lib/crypto";
+import { decryptClient, encryptClient } from "@/lib/crypto";
 
 interface Slot {
   time: string;
@@ -46,12 +46,25 @@ export default function Reservation() {
 
   const [customerName, setCustomerName] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
+  const [fetchError, setFetchError] = useState<string | null>(null);
 
   const fetchReservations = async (date: string) => {
     setIsLoading(true);
+    setFetchError(null);
     try {
       const res = await fetch(`/api/reservations?date=${date}`);
-      if (!res.ok) throw new Error("Failed to fetch");
+
+      // Try to decrypt error body for better error messages
+      if (!res.ok) {
+        try {
+          const errEnvelope = await res.json();
+          const errData = await decryptClient<{ error: string }>(errEnvelope.d);
+          throw new Error(errData.error || `Server error ${res.status}`);
+        } catch {
+          throw new Error(`Failed to load slots (HTTP ${res.status})`);
+        }
+      }
+
       const envelope = await res.json();
       const data = await decryptClient<Record<string, string>[]>(envelope.d);
       
@@ -62,7 +75,7 @@ export default function Reservation() {
       const pvtLounge: Slot[] = DEFAULT_SLOTS.map(time => ({ time, status: "available" }));
       const celeLounge: Slot[] = DEFAULT_SLOTS.map(time => ({ time, status: "available" }));
       
-      data.forEach((booking: any) => {
+      data.forEach((booking: Record<string, string>) => {
         if (booking.console_id === "PS5") {
           const slot = ps5.find(s => s.time === booking.time_slot);
           if (slot) slot.status = "busy";
@@ -90,14 +103,17 @@ export default function Reservation() {
       setVrSlots(vr);
       setPvtLoungeSlots(pvtLounge);
       setCeleLoungeSlots(celeLounge);
-    } catch (err) {
-      console.error(err);
-      setPs5Slots(DEFAULT_SLOTS.map(time => ({ time, status: "available" })));
-      setPs4Slots(DEFAULT_SLOTS.map(time => ({ time, status: "available" })));
-      setSimulationSlots(DEFAULT_SLOTS.map(time => ({ time, status: "available" })));
-      setVrSlots(DEFAULT_SLOTS.map(time => ({ time, status: "available" })));
-      setPvtLoungeSlots(DEFAULT_SLOTS.map(time => ({ time, status: "available" })));
-      setCeleLoungeSlots(DEFAULT_SLOTS.map(time => ({ time, status: "available" })));
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : "Could not load slot availability";
+      console.error("fetchReservations error:", msg);
+      setFetchError(msg);
+      // Do NOT fall back to all-available — keep slots empty so user can't accidentally book
+      setPs5Slots([]);
+      setPs4Slots([]);
+      setSimulationSlots([]);
+      setVrSlots([]);
+      setPvtLoungeSlots([]);
+      setCeleLoungeSlots([]);
     } finally {
       setIsLoading(false);
     }
@@ -118,30 +134,41 @@ export default function Reservation() {
 
   const getPrice = (type: string, numPlayers: number, numHours: number) => {
     if (numHours === 0) return 0;
-    
-    let total = 0;
+
+    // Pricing: first hour rate + (extra hours × add-on rate)
+    // This gives: PS5 1hr=₹199, 2hr=₹399, 3hr=₹599 etc.
     if (type === "PS5") {
-      const rate = numPlayers === 1 ? 199 : 150 * numPlayers;
-      total = rate * numHours;
+      if (numPlayers === 1) {
+        return 199 + (numHours - 1) * 200;
+      } else {
+        // 4-player rate: ₹150/player/hr
+        return numPlayers * (150 * numHours);
+      }
     } else if (type === "PS4") {
-      const rate = numPlayers === 1 ? 149 : 100 * numPlayers;
-      total = rate * numHours;
+      if (numPlayers === 1) {
+        return 149 + (numHours - 1) * 150;
+      } else {
+        // 4-player rate: ₹100/player/hr
+        return numPlayers * (100 * numHours);
+      }
     } else if (type === "Pvt Lounge") {
-      const rate = numPlayers === 1 ? 400 : 200 * numPlayers;
-      total = rate * numHours;
+      if (numPlayers === 1) {
+        return 400 + (numHours - 1) * 400;
+      } else {
+        return numPlayers * (200 * numHours);
+      }
     } else if (type === "Cele Lounge") {
-      // 1st hour: 3000 for 1st person, 2000 each for others
-      const firstHourRate = numPlayers === 1 ? 3000 : 2000 * numPlayers;
-      // Add-on hours: 2000 flat per hour (based on "2,000 ADD ON HOURS" in image)
-      total = firstHourRate + (numHours - 1) * 2000;
+      // 1st hour: ₹3000, add-on hours: ₹2000 each
+      return 3000 + (numHours - 1) * 2000;
     } else if (type === "Simulation") {
-      total = 350 * numPlayers * numHours;
+      return 350 * numPlayers * numHours;
     } else if (type === "VR") {
-      total = 200 * numPlayers * numHours;
+      return 200 * numPlayers * numHours;
     }
-    
-    return total;
+
+    return 0;
   };
+
 
   const handleSlotClick = (type: string, time: string, status: string) => {
     if (status === "available") {
@@ -165,40 +192,65 @@ export default function Reservation() {
 
     setIsSubmitting(true);
     try {
+      // Encrypt the entire payload before sending
+      const encryptedBody = await encryptClient({
+        customer_name: customerName,
+        phone_number: phoneNumber,
+        booking_date: selectedDate,
+        time_slots: selectedSlots.map(s => s.time),
+        console_id: activeTab,
+        players: players
+      });
+
       const res = await fetch("/api/reservations", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          customer_name: customerName,
-          phone_number: phoneNumber,
-          booking_date: selectedDate,
-          time_slots: selectedSlots.map(s => s.time),
-          console_id: activeTab,
-          players: players
-        }),
+        body: JSON.stringify({ d: encryptedBody }),
       });
       
       const envelope = await res.json();
       const data = await decryptClient<{ success?: boolean; error?: string; message?: string }>(envelope.d);
+
+      // ── Handle race condition: slot was booked by someone else just before confirm ──
+      if (res.status === 409) {
+        // Refresh the slot grid so the newly-booked slot shows as BOOKED
+        await fetchReservations(selectedDate);
+
+        // Find which of the selected slots are now taken (parse from error message)
+        const takenTimesRaw = data.error?.replace("Slots already booked: ", "") ?? "";
+        const takenTimes = takenTimesRaw.split(", ").map(t => t.trim());
+
+        // Remove taken slots from the user's current selection
+        setSelectedSlots(prev => prev.filter(s => !takenTimes.includes(s.time)));
+
+        setToast({
+          message: `⚠️ Sorry! ${takenTimes.join(", ")} was just booked by someone else. Please pick another slot.`,
+          type: "error",
+        });
+        return;
+      }
+
       if (!res.ok) throw new Error(data.error || "Failed to make reservation");
       
-      setToast({ message: "Payment successful! Reservations Confirmed.", type: "success" });
+      setToast({ message: "✅ Booking Confirmed! See you at V1 Gaming!", type: "success" });
       setCustomerName("");
       setPhoneNumber("");
       setSelectedSlots([]);
       setPlayers(1);
       fetchReservations(selectedDate);
-    } catch (err: any) {
-      setToast({ message: err.message || "An error occurred", type: "error" });
+    } catch (err: unknown) {
+      const error = err as Error;
+      setToast({ message: error.message || "An error occurred", type: "error" });
     } finally {
       setIsSubmitting(false);
     }
   };
 
+
   const currentSlots = activeTab === "PS5" ? ps5Slots : activeTab === "PS4" ? ps4Slots : activeTab === "Simulation" ? simulationSlots : activeTab === "VR" ? vrSlots : activeTab === "Pvt Lounge" ? pvtLoungeSlots : celeLoungeSlots;
 
   return (
-    <div className="flex flex-col lg:flex-row gap-8 w-full max-w-6xl mx-auto animate-in fade-in duration-700 relative">
+    <div className="flex flex-col lg:flex-row gap-6 w-full animate-in fade-in duration-700 relative">
       
       {/* Toast Notification */}
       {toast && (
@@ -218,22 +270,23 @@ export default function Reservation() {
       )}
 
       {/* Main Booking Area */}
-      <div className="w-full lg:w-2/3 glass-panel p-6 sm:p-10 relative min-h-[600px]">
+      <div className="w-full lg:w-2/3 glass-panel p-5 sm:p-8 relative min-h-[500px]">
         {/* Header & Date Picker */}
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 border-b border-white/10 pb-6 gap-6">
           <h3 className="text-2xl font-heading font-black text-white uppercase tracking-widest flex items-center gap-2">
             <Zap className="w-6 h-6 text-[#DC2626]" /> Select Slot
           </h3>
-          <div className="w-full sm:w-auto">
+          <div className="relative w-full sm:w-auto">
             <input
               type="date"
               min={new Date().toISOString().split("T")[0]}
               onKeyDown={(e) => e.preventDefault()}
-              onClick={(e) => (e.target as any).showPicker?.()}
-              className="w-full bg-[#111111] border border-white/10 rounded-xl p-3 text-white focus:outline-none focus:border-[#DC2626] font-medium cursor-pointer"
+              onClick={(e) => (e.target as HTMLInputElement & { showPicker?: () => void }).showPicker?.()}
+              className="w-full bg-[#111111] border border-white/10 rounded-xl p-3 pr-10 text-white focus:outline-none focus:border-[#DC2626] font-medium cursor-pointer [&::-webkit-calendar-picker-indicator]:opacity-0 [&::-webkit-calendar-picker-indicator]:absolute [&::-webkit-calendar-picker-indicator]:inset-0 [&::-webkit-calendar-picker-indicator]:w-full [&::-webkit-calendar-picker-indicator]:cursor-pointer"
               value={selectedDate}
               onChange={(e) => setSelectedDate(e.target.value)}
             />
+            <Calendar className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#DC2626] pointer-events-none" />
           </div>
         </div>
 
@@ -260,6 +313,23 @@ export default function Reservation() {
           </div>
         )}
 
+        {/* Fetch Error Banner */}
+        {!isLoading && fetchError && (
+          <div className="flex flex-col items-center justify-center py-12 gap-4 text-center">
+            <AlertCircle className="w-12 h-12 text-red-500" />
+            <div>
+              <p className="text-red-400 font-bold text-base mb-1">Could not load slot availability</p>
+              <p className="text-gray-500 text-sm">{fetchError}</p>
+            </div>
+            <button
+              onClick={() => fetchReservations(selectedDate)}
+              className="mt-2 px-6 py-2.5 bg-[#DC2626] hover:bg-[#b91c1c] text-white font-heading font-bold uppercase tracking-widest text-sm rounded-xl transition-all shadow-[0_0_15px_rgba(220,38,38,0.3)]"
+            >
+              Retry
+            </button>
+          </div>
+        )}
+
         {/* Grid */}
         <div className="grid grid-cols-3 sm:grid-cols-4 gap-4">
           {currentSlots.map((slot, index) => {
@@ -274,8 +344,8 @@ export default function Reservation() {
                 className={`py-3 px-2 font-bold text-sm rounded-xl transition-all border flex flex-col items-center justify-center gap-1 ${
                   isAvailable
                     ? isSelected
-                      ? "bg-[#00D4FF]/20 border-[#00D4FF] text-[#00D4FF] shadow-[0_0_20px_rgba(0,212,255,0.5)] scale-105"
-                      : "bg-[#111111] border-[#DC2626]/30 text-white shadow-[inset_0_0_10px_rgba(220,38,38,0.1)] hover:border-[#DC2626] hover:shadow-[0_0_15px_rgba(220,38,38,0.3)] cursor-pointer"
+                      ? "bg-[#16a34a]/20 border-[#22c55e] text-[#22c55e] shadow-[0_0_20px_rgba(34,197,94,0.5)] scale-105"
+                      : "bg-[#111111] border-[#22c55e]/30 text-[#22c55e] hover:border-[#22c55e] hover:shadow-[0_0_15px_rgba(34,197,94,0.3)] cursor-pointer"
                     : "bg-[#0A0A0A] border-white/5 text-gray-600 cursor-not-allowed opacity-60"
                 }`}
               >
@@ -361,7 +431,7 @@ export default function Reservation() {
                 <button 
                   onClick={handleReservation}
                   disabled={isSubmitting}
-                  className="w-full py-4 bg-[#00D4FF] hover:bg-[#00D4FF]/90 text-[#000000] font-heading font-black uppercase tracking-widest rounded-xl transition-all shadow-[0_0_20px_rgba(0,212,255,0.4)] flex justify-center items-center gap-2"
+                  className="w-full py-4 bg-[#DC2626] hover:bg-[#b91c1c] text-white font-heading font-black uppercase tracking-widest rounded-xl transition-all shadow-[0_0_20px_rgba(220,38,38,0.4)] hover:shadow-[0_0_30px_rgba(220,38,38,0.6)] flex justify-center items-center gap-2 active:scale-95"
                 >
                   {isSubmitting ? <><Loader2 className="w-5 h-5 animate-spin" /> Processing...</> : "Confirm & Pay"}
                 </button>

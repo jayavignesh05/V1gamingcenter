@@ -32,13 +32,14 @@ body {
 }
 
 .glass-panel {
-  @apply bg-[#111111]/80 backdrop-blur-xl border border-white/10 rounded-2xl shadow-none;
+  @apply bg-[#111111]/80 backdrop-blur-xl border border-white/10 rounded-2xl;
 }
 
 .glass-card {
-  @apply bg-[#111111]/80 backdrop-blur-xl border border-white/5 transition-all duration-300 rounded-2xl overflow-hidden shadow-none hover:border-[#DC2626] hover:shadow-[0_0_20px_rgba(220,38,38,0.4)] hover:-translate-y-1;
+  @apply bg-[#111111]/80 backdrop-blur-xl border border-white/5 transition-all duration-300 rounded-2xl overflow-hidden hover:border-[#DC2626] hover:shadow-[0_0_20px_rgba(220,38,38,0.4)] hover:-translate-y-1;
 }
 
 .bento-grid {
   @apply grid gap-4 grid-cols-1 md:grid-cols-3 lg:grid-cols-4 auto-rows-[250px];
 }
+

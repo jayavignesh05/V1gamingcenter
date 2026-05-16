@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import pool from '@/lib/db';
-import { encrypt } from '@/lib/crypto';
+import { encrypt, decrypt } from '@/lib/crypto';
 import { RowDataPacket } from 'mysql2';
 
 /** Wrap any response payload in an encrypted envelope */
@@ -31,7 +31,23 @@ export async function GET(request: Request) {
 
 export async function POST(request: Request) {
   try {
-    const body = await request.json();
+    const envelope = await request.json();
+
+    // Decrypt the incoming payload
+    let body: {
+      customer_name: string;
+      phone_number: string;
+      booking_date: string;
+      time_slots: string[];
+      console_id: string;
+      players: number;
+    };
+    try {
+      body = decrypt(envelope.d);
+    } catch {
+      return encryptedJson({ error: 'Invalid or tampered request payload' }, 400);
+    }
+
     const { customer_name, phone_number, booking_date, time_slots, console_id } = body;
 
     if (

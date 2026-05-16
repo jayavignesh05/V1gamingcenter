@@ -27,20 +27,35 @@ export default function LoungePage() {
         <div className="absolute inset-0 bg-gradient-to-t from-[#000000] via-[#000000]/80 to-transparent"></div>
         
         <div className="relative z-10 text-center px-4 max-w-4xl mx-auto">
-          <div className="inline-flex items-center gap-2 mb-4 px-4 py-1.5 rounded-full border border-[#FF006E]/50 bg-[#FF006E]/10 text-[#FF006E] text-xs font-bold uppercase tracking-widest">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.1, ease: "easeOut" }}
+            className="inline-flex items-center gap-2 mb-4 px-4 py-1.5 rounded-full border border-[#FF006E]/50 bg-[#FF006E]/10 text-[#FF006E] text-xs font-bold uppercase tracking-widest"
+          >
             <Crown className="w-4 h-4" /> The Ultimate Premium Experience
-          </div>
-          <h1 className="text-5xl md:text-7xl lg:text-8xl font-heading font-black mb-6 text-white uppercase tracking-tighter drop-shadow-[0_0_20px_rgba(255,0,110,0.3)]">
+          </motion.div>
+          <motion.h1
+            initial={{ opacity: 0, y: 28 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.7, delay: 0.25, ease: [0.22, 1, 0.36, 1] as [number,number,number,number] }}
+            className="text-5xl md:text-7xl lg:text-8xl font-heading font-black mb-6 text-white uppercase tracking-tighter drop-shadow-[0_0_20px_rgba(255,0,110,0.3)]"
+          >
             VIP <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#FF006E] to-purple-500">LOUNGE</span>
-          </h1>
-          <p className="text-gray-300 max-w-2xl mx-auto text-lg">
+          </motion.h1>
+          <motion.p
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.45, ease: "easeOut" }}
+            className="text-gray-300 max-w-2xl mx-auto text-lg"
+          >
             Step away from the main floor. The VIP Lounge is designed for groups and players who demand the utmost luxury and privacy.
-          </p>
+          </motion.p>
         </div>
       </section>
       
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 -mt-16">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-12 mb-24">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 pt-12">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-20 items-stretch">
           {/* Pricing & CTA */}
           <div className="flex flex-col gap-6">
             <motion.div 
@@ -100,10 +115,10 @@ export default function LoungePage() {
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {bookingOptions.map((opt, idx) => (
-            <div key={idx} className="relative aspect-square md:aspect-auto md:h-80 rounded-2xl overflow-hidden group">
-              <div className="absolute inset-0 bg-[#111111] z-0"></div>
-              {/* Gallery styling with dark overlay */}
-              <div className="absolute inset-0 bg-gradient-to-t from-[#000000] via-[#000000]/60 to-transparent z-10"></div>
+            <div key={idx} className="relative h-64 md:h-80 rounded-2xl overflow-hidden group border border-white/10 hover:border-[#FF006E]/40 transition-colors">
+              <div className="absolute inset-0 bg-gradient-to-br from-[#1a0a0f] to-[#0a0a0a] z-0"></div>
+              <div className="absolute inset-0 bg-gradient-to-t from-[#000000] via-[#000000]/40 to-transparent z-10"></div>
+              <div className="absolute top-0 right-0 w-32 h-32 bg-[#FF006E]/5 rounded-full blur-2xl"></div>
               
               <div className="absolute inset-0 z-20 p-8 flex flex-col justify-end">
                 <h3 className="text-2xl font-heading font-black text-white uppercase mb-1">{opt.title}</h3>

@@ -53,17 +53,22 @@ export default function GamingZones() {
   ];
 
   return (
-    <main className="min-h-screen pt-32 pb-24 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto selection:bg-[#DC2626]/30">
-      <div className="text-center mb-16 relative z-10">
+    <main className="min-h-screen pt-28 pb-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto selection:bg-[#DC2626]/30">
+      <motion.div
+        initial={{ opacity: 0, y: 28 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] as [number,number,number,number] }}
+        className="text-center mb-12 relative z-10"
+      >
         <h1 className="text-5xl md:text-7xl font-heading font-black mb-4 uppercase text-white drop-shadow-[0_0_20px_rgba(255,255,255,0.1)]">
           GAMING <span className="text-[#00D4FF]">ZONES</span>
         </h1>
         <p className="text-gray-400 max-w-2xl mx-auto font-medium">
           Choose your battleground. From immersive 4K OLED PS5 setups to full-motion VR experiences.
         </p>
-      </div>
+      </motion.div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6">
         {zones.map((zone, idx) => (
           <motion.div 
             key={idx}
