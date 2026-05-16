@@ -8,45 +8,95 @@ import { decryptClient, encryptClient } from "@/lib/crypto";
 
 interface Slot {
   time: string;
-  status: "available" | "busy";
+  status: "available" | "busy" | "past";
 }
 
 const DEFAULT_SLOTS = [
-  "10:00 AM", "11:00 AM", "12:00 PM", "01:00 PM", 
-  "02:00 PM", "03:00 PM", "04:00 PM", "05:00 PM",
-  "06:00 PM", "07:00 PM", "08:00 PM", "09:00 PM", "10:00 PM"
+  "10:00 AM – 11:00 AM", "11:00 AM – 12:00 PM", "12:00 PM – 01:00 PM", "01:00 PM – 02:00 PM",
+  "02:00 PM – 03:00 PM", "03:00 PM – 04:00 PM", "04:00 PM – 05:00 PM", "05:00 PM – 06:00 PM",
+  "06:00 PM – 07:00 PM", "07:00 PM – 08:00 PM", "08:00 PM – 09:00 PM", "09:00 PM – 10:00 PM", "10:00 PM – 11:00 PM"
 ];
 
+/** Stations per zone — names shown to user */
+const ZONE_STATIONS: Record<string, string[]> = {
+  PS5:                 ["Station 1", "Station 2", "Station 3", "Station 4", "Station 5"],
+  PS4:                 ["Station 1", "Station 2", "Station 3", "Station 4"],
+  Simulation:          ["Station 1", "Station 2"],
+  VR:                  ["Station 1", "Station 2", "Station 3"],
+  "Pvt Lounge":        ["Station 1"],
+  "Celebrations Lounge": ["Station 1"],
+};
+
+// IST = UTC+5:30 — use this instead of toISOString() which returns UTC
+const getISTDateString = (): string => {
+  const now = new Date();
+  const istOffset = 5.5 * 60 * 60 * 1000; // 5 hrs 30 min in ms
+  const istDate = new Date(now.getTime() + istOffset);
+  return istDate.toISOString().split("T")[0];
+};
+
 export default function Reservation() {
-  const [selectedDate, setSelectedDate] = useState<string>(new Date().toISOString().split("T")[0]);
+  const [selectedDate, setSelectedDate] = useState<string>(getISTDateString());
   const [selectedSlots, setSelectedSlots] = useState<{ type: string; time: string }[]>([]);
   const [players, setPlayers] = useState(1);
   const [toast, setToast] = useState<{message: string, type: 'success' | 'error'} | null>(null);
   
   const searchParams = useSearchParams();
-  const [activeTab, setActiveTab] = useState<"PS5" | "PS4" | "Simulation" | "VR" | "Pvt Lounge" | "Cele Lounge">("PS5");
+  const [activeTab, setActiveTab] = useState<"PS5" | "PS4" | "Simulation" | "VR" | "Pvt Lounge" | "Celebrations Lounge">("PS5");
 
   useEffect(() => {
     const zone = searchParams.get("zone");
-    const validTabs = ["PS5", "PS4", "Simulation", "VR", "Pvt Lounge", "Cele Lounge"];
+    const validTabs = ["PS5", "PS4", "Simulation", "VR", "Pvt Lounge", "Celebrations Lounge"];
     if (zone && validTabs.includes(zone)) {
       setActiveTab(zone as any);
     }
   }, [searchParams]);
   
-  const [ps5Slots, setPs5Slots] = useState<Slot[]>([]);
-  const [ps4Slots, setPs4Slots] = useState<Slot[]>([]);
-  const [simulationSlots, setSimulationSlots] = useState<Slot[]>([]);
-  const [vrSlots, setVrSlots] = useState<Slot[]>([]);
-  const [pvtLoungeSlots, setPvtLoungeSlots] = useState<Slot[]>([]);
-  const [celeLoungeSlots, setCeleLoungeSlots] = useState<Slot[]>([]);
+  // allBookings[zone][station] = Set of booked time strings
+  const [allBookings, setAllBookings] = useState<Record<string, Record<string, Set<string>>>>({});
+  const [selectedStation, setSelectedStation] = useState<string>("Station 1");
   
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const [customerName, setCustomerName] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
+  const [nameError, setNameError] = useState("");
+  const [phoneError, setPhoneError] = useState("");
   const [fetchError, setFetchError] = useState<string | null>(null);
+
+  const validateName = (val: string): string => {
+    const v = val.trim();
+    if (!v) return "Name is required.";
+    if (v.length < 2) return "Name must be at least 2 characters.";
+    if (!/^[a-zA-Z\s.]{2,50}$/.test(v)) return "Only letters and spaces allowed.";
+    return "";
+  };
+
+  const validatePhone = (val: string): string => {
+    const v = val.trim().replace(/\s/g, "");
+    if (!v) return "Phone number is required.";
+    if (!/^[6-9]\d{9}$/.test(v)) return "Enter valid 10-digit Indian mobile (starts 6-9).";
+    return "";
+  };
+
+  // Returns true if the slot range's start time has already passed (IST)
+  const isPastSlot = (date: string, slotTime: string): boolean => {
+    const today = getISTDateString();
+    if (date !== today) return false;
+
+    const now = new Date();
+    // slotTime is "10:00 AM – 11:00 AM" — extract start
+    const startTime = slotTime.split(" – ")[0].trim();
+    const [timePart, meridiem] = startTime.split(" ");
+    let [hours, minutes] = timePart.split(":").map(Number);
+    if (meridiem === "PM" && hours !== 12) hours += 12;
+    if (meridiem === "AM" && hours === 12) hours = 0;
+
+    const slotDate = new Date();
+    slotDate.setHours(hours, minutes, 0, 0);
+    return now >= slotDate;
+  };
 
   const fetchReservations = async (date: string) => {
     setIsLoading(true);
@@ -54,7 +104,6 @@ export default function Reservation() {
     try {
       const res = await fetch(`/api/reservations?date=${date}`);
 
-      // Try to decrypt error body for better error messages
       if (!res.ok) {
         try {
           const errEnvelope = await res.json();
@@ -67,53 +116,27 @@ export default function Reservation() {
 
       const envelope = await res.json();
       const data = await decryptClient<Record<string, string>[]>(envelope.d);
-      
-      const ps5: Slot[] = DEFAULT_SLOTS.map(time => ({ time, status: "available" }));
-      const ps4: Slot[] = DEFAULT_SLOTS.map(time => ({ time, status: "available" }));
-      const simulation: Slot[] = DEFAULT_SLOTS.map(time => ({ time, status: "available" }));
-      const vr: Slot[] = DEFAULT_SLOTS.map(time => ({ time, status: "available" }));
-      const pvtLounge: Slot[] = DEFAULT_SLOTS.map(time => ({ time, status: "available" }));
-      const celeLounge: Slot[] = DEFAULT_SLOTS.map(time => ({ time, status: "available" }));
-      
-      data.forEach((booking: Record<string, string>) => {
-        if (booking.console_id === "PS5") {
-          const slot = ps5.find(s => s.time === booking.time_slot);
-          if (slot) slot.status = "busy";
-        } else if (booking.console_id === "PS4") {
-          const slot = ps4.find(s => s.time === booking.time_slot);
-          if (slot) slot.status = "busy";
-        } else if (booking.console_id === "Simulation") {
-          const slot = simulation.find(s => s.time === booking.time_slot);
-          if (slot) slot.status = "busy";
-        } else if (booking.console_id === "VR") {
-          const slot = vr.find(s => s.time === booking.time_slot);
-          if (slot) slot.status = "busy";
-        } else if (booking.console_id === "Pvt Lounge") {
-          const slot = pvtLounge.find(s => s.time === booking.time_slot);
-          if (slot) slot.status = "busy";
-        } else if (booking.console_id === "Cele Lounge") {
-          const slot = celeLounge.find(s => s.time === booking.time_slot);
-          if (slot) slot.status = "busy";
-        }
+
+      // Build per-zone per-station booked time sets
+      const bookings: Record<string, Record<string, Set<string>>> = {};
+      Object.keys(ZONE_STATIONS).forEach(zone => {
+        bookings[zone] = {};
+        ZONE_STATIONS[zone].forEach(st => { bookings[zone][st] = new Set(); });
       });
-      
-      setPs5Slots(ps5);
-      setPs4Slots(ps4);
-      setSimulationSlots(simulation);
-      setVrSlots(vr);
-      setPvtLoungeSlots(pvtLounge);
-      setCeleLoungeSlots(celeLounge);
+
+      data.forEach((booking: Record<string, string>) => {
+        const z = booking.console_id;
+        const s = booking.station_id;
+        const t = booking.time_slot;
+        if (bookings[z]?.[s]) bookings[z][s].add(t);
+      });
+
+      setAllBookings(bookings);
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : "Could not load slot availability";
       console.error("fetchReservations error:", msg);
       setFetchError(msg);
-      // Do NOT fall back to all-available — keep slots empty so user can't accidentally book
-      setPs5Slots([]);
-      setPs4Slots([]);
-      setSimulationSlots([]);
-      setVrSlots([]);
-      setPvtLoungeSlots([]);
-      setCeleLoungeSlots([]);
+      setAllBookings({});
     } finally {
       setIsLoading(false);
     }
@@ -123,6 +146,7 @@ export default function Reservation() {
     fetchReservations(selectedDate);
     setSelectedSlots([]);
     setPlayers(1);
+    setSelectedStation("Station 1"); // reset station on date/zone change
   }, [selectedDate, activeTab]);
 
   useEffect(() => {
@@ -157,7 +181,7 @@ export default function Reservation() {
       } else {
         return numPlayers * (200 * numHours);
       }
-    } else if (type === "Cele Lounge") {
+    } else if (type === "Celebrations Lounge") {
       // 1st hour: ₹3000, add-on hours: ₹2000 each
       return 3000 + (numHours - 1) * 2000;
     } else if (type === "Simulation") {
@@ -181,14 +205,16 @@ export default function Reservation() {
         }
       });
     }
+    // "past" and "busy" slots — do nothing (button is disabled anyway)
   };
 
   const handleReservation = async () => {
     if (selectedSlots.length === 0) return;
-    if (!customerName.trim() || !phoneNumber.trim()) {
-      setToast({ message: "Please enter your Name and Phone Number.", type: "error" });
-      return;
-    }
+    const nErr = validateName(customerName);
+    const pErr = validatePhone(phoneNumber);
+    setNameError(nErr);
+    setPhoneError(pErr);
+    if (nErr || pErr) return;
 
     setIsSubmitting(true);
     try {
@@ -199,6 +225,7 @@ export default function Reservation() {
         booking_date: selectedDate,
         time_slots: selectedSlots.map(s => s.time),
         console_id: activeTab,
+        station_id: selectedStation,
         players: players
       });
 
@@ -247,7 +274,12 @@ export default function Reservation() {
   };
 
 
-  const currentSlots = activeTab === "PS5" ? ps5Slots : activeTab === "PS4" ? ps4Slots : activeTab === "Simulation" ? simulationSlots : activeTab === "VR" ? vrSlots : activeTab === "Pvt Lounge" ? pvtLoungeSlots : celeLoungeSlots;
+  // Compute current station's slots dynamically from allBookings
+  const currentSlots: Slot[] = DEFAULT_SLOTS.map(time => {
+    if (isPastSlot(selectedDate, time)) return { time, status: "past" };
+    const isBooked = allBookings[activeTab]?.[selectedStation]?.has(time) ?? false;
+    return { time, status: isBooked ? "busy" : "available" };
+  });
 
   return (
     <div className="flex flex-col lg:flex-row gap-6 w-full animate-in fade-in duration-700 relative">
@@ -279,7 +311,7 @@ export default function Reservation() {
           <div className="relative w-full sm:w-auto">
             <input
               type="date"
-              min={new Date().toISOString().split("T")[0]}
+              min={getISTDateString()}
               onKeyDown={(e) => e.preventDefault()}
               onClick={(e) => (e.target as HTMLInputElement & { showPicker?: () => void }).showPicker?.()}
               className="w-full bg-[#111111] border border-white/10 rounded-xl p-3 pr-10 text-white focus:outline-none focus:border-[#DC2626] font-medium cursor-pointer [&::-webkit-calendar-picker-indicator]:opacity-0 [&::-webkit-calendar-picker-indicator]:absolute [&::-webkit-calendar-picker-indicator]:inset-0 [&::-webkit-calendar-picker-indicator]:w-full [&::-webkit-calendar-picker-indicator]:cursor-pointer"
@@ -292,7 +324,7 @@ export default function Reservation() {
 
         {/* Tabs */}
         <div className="flex flex-wrap gap-2 mb-8">
-          {["PS5", "PS4", "Simulation", "VR", "Pvt Lounge", "Cele Lounge"].map((tab) => (
+          {["PS5", "PS4", "Simulation", "VR", "Pvt Lounge", "Celebrations Lounge"].map((tab) => (
             <button 
               key={tab}
               onClick={() => setActiveTab(tab as any)}
@@ -307,33 +339,73 @@ export default function Reservation() {
           ))}
         </div>
 
-        {isLoading && (
-          <div className="absolute inset-0 flex items-center justify-center bg-[#111111]/80 backdrop-blur-sm z-10 rounded-2xl">
-            <Loader2 className="w-12 h-12 text-[#DC2626] animate-spin" />
+        {/* ── Station Picker ── */}
+        <div className="mb-6">
+          <p className="text-xs font-bold uppercase tracking-widest text-gray-500 mb-3">Select Station</p>
+          <div className="flex flex-wrap gap-2">
+            {(ZONE_STATIONS[activeTab] ?? []).map(station => {
+              const allSlotsBooked = DEFAULT_SLOTS.every(
+                t => isPastSlot(selectedDate, t) || (allBookings[activeTab]?.[station]?.has(t) ?? false)
+              );
+              const isActiveStation = selectedStation === station;
+              return (
+                <button
+                  key={station}
+                  onClick={() => { setSelectedStation(station); setSelectedSlots([]); }}
+                  className={`px-4 py-2 text-xs font-black uppercase tracking-wider rounded-xl border transition-all duration-200 ${
+                    isActiveStation
+                      ? "bg-[#00D4FF]/20 border-[#00D4FF] text-[#00D4FF] shadow-[0_0_12px_rgba(0,212,255,0.3)]"
+                      : allSlotsBooked
+                        ? "bg-[#0a0a0a] border-red-900/30 text-gray-600 opacity-40 cursor-not-allowed"
+                        : "bg-[#111111] border-white/10 text-gray-400 hover:border-[#00D4FF]/50 hover:text-[#00D4FF] cursor-pointer"
+                  }`}
+                >
+                  {activeTab} {station}
+                  {allSlotsBooked && <span className="ml-1 text-[8px]">FULL</span>}
+                </button>
+              );
+            })}
           </div>
-        )}
+        </div>
 
-        {/* Fetch Error Banner */}
+        {/* Small non-blocking warning if API failed */}
         {!isLoading && fetchError && (
-          <div className="flex flex-col items-center justify-center py-12 gap-4 text-center">
-            <AlertCircle className="w-12 h-12 text-red-500" />
-            <div>
-              <p className="text-red-400 font-bold text-base mb-1">Could not load slot availability</p>
-              <p className="text-gray-500 text-sm">{fetchError}</p>
+          <div className="flex items-center justify-between gap-3 mb-4 px-3 py-2.5 bg-yellow-900/20 border border-yellow-700/30 rounded-xl">
+            <div className="flex items-center gap-2">
+              <AlertCircle className="w-4 h-4 text-yellow-500 flex-shrink-0" />
+              <span className="text-xs text-yellow-400 font-medium">
+                Could not load live data — availability may not be accurate.
+              </span>
             </div>
             <button
               onClick={() => fetchReservations(selectedDate)}
-              className="mt-2 px-6 py-2.5 bg-[#DC2626] hover:bg-[#b91c1c] text-white font-heading font-bold uppercase tracking-widest text-sm rounded-xl transition-all shadow-[0_0_15px_rgba(220,38,38,0.3)]"
+              className="text-[10px] font-black uppercase tracking-widest text-yellow-400 border border-yellow-700/50 px-2.5 py-1 rounded-lg hover:bg-yellow-900/40 transition-all flex-shrink-0"
             >
               Retry
             </button>
           </div>
         )}
 
-        {/* Grid */}
+        {/* Skeleton grid while loading — blocks interaction */}
+        {isLoading ? (
+          <div className="grid grid-cols-2 xs:grid-cols-3 sm:grid-cols-4 gap-3 sm:gap-4">
+            {Array.from({ length: 13 }).map((_, i) => (
+              <div
+                key={i}
+                className="py-4 px-3 rounded-2xl border border-white/5 bg-[#0d0d0d] flex flex-col items-center justify-center gap-2 animate-pulse"
+              >
+                <div className="h-3 w-16 bg-white/10 rounded-full" />
+                <div className="h-2 w-2 bg-white/5 rounded-full" />
+                <div className="h-2.5 w-14 bg-white/5 rounded-full" />
+              </div>
+            ))}
+          </div>
+        ) : (
         <div className="grid grid-cols-2 xs:grid-cols-3 sm:grid-cols-4 gap-3 sm:gap-4">
           {currentSlots.map((slot, index) => {
             const isAvailable = slot.status === "available";
+            const isPast     = slot.status === "past";
+            const isBusy     = slot.status === "busy";
             const isSelected = selectedSlots.some(s => s.time === slot.time && s.type === activeTab);
             
             return (
@@ -341,24 +413,65 @@ export default function Reservation() {
                 key={`${activeTab}-${index}`}
                 disabled={!isAvailable}
                 onClick={() => handleSlotClick(activeTab, slot.time, slot.status)}
-                className={`py-3 px-2 font-bold text-sm rounded-xl transition-all border flex flex-col items-center justify-center gap-1 ${
-                  isAvailable
-                    ? isSelected
-                      ? "bg-[#16a34a]/20 border-[#22c55e] text-[#22c55e] shadow-[0_0_20px_rgba(34,197,94,0.5)] scale-105"
-                      : "bg-[#111111] border-[#22c55e]/30 text-[#22c55e] hover:border-[#22c55e] hover:shadow-[0_0_15px_rgba(34,197,94,0.3)] cursor-pointer"
-                    : "bg-[#0A0A0A] border-white/5 text-gray-600 cursor-not-allowed opacity-60"
+                className={`relative py-4 px-3 rounded-2xl transition-all duration-200 border flex flex-col items-center justify-center gap-1.5 overflow-hidden group ${
+                  isSelected
+                    ? "bg-[#16a34a]/20 border-[#22c55e] shadow-[0_0_24px_rgba(34,197,94,0.45)] scale-[1.04]"
+                    : isAvailable
+                      ? "bg-[#0d0d0d] border-[#22c55e]/20 hover:border-[#22c55e]/70 hover:bg-[#0f1f0f] hover:shadow-[0_0_16px_rgba(34,197,94,0.2)] cursor-pointer"
+                      : isPast
+                        ? "bg-[#080808] border-white/5 cursor-not-allowed opacity-35"
+                        : "bg-[#0d0808] border-red-900/20 cursor-not-allowed opacity-50"
                 }`}
               >
-                <span className={!isAvailable ? "line-through text-xs" : ""}>{slot.time}</span>
-                {!isAvailable && (
-                  <span className="text-[9px] font-black uppercase tracking-widest bg-red-900/50 text-red-400 px-1.5 py-0.5 rounded-md border border-red-800/50">
-                    Booked
+                {/* Selected glow ring */}
+                {isSelected && (
+                  <span className="absolute inset-0 rounded-2xl border border-[#22c55e]/40 animate-pulse pointer-events-none" />
+                )}
+
+                {/* Start time */}
+                <span className={`text-sm font-black tracking-wide font-heading ${
+                  isSelected ? "text-[#22c55e]" :
+                  isAvailable ? "text-[#22c55e] group-hover:text-[#4ade80]" :
+                  "text-gray-600 line-through"
+                }`}>
+                  {slot.time.split(" – ")[0]}
+                </span>
+
+                {/* Arrow divider */}
+                <span className={`text-[10px] font-bold ${
+                  isAvailable ? "text-[#22c55e]/50" : "text-gray-700"
+                }`}>↓</span>
+
+                {/* End time */}
+                <span className={`text-[11px] font-semibold ${
+                  isSelected ? "text-[#22c55e]/80" :
+                  isAvailable ? "text-[#22c55e]/60 group-hover:text-[#22c55e]/80" :
+                  "text-gray-700 line-through"
+                }`}>
+                  {slot.time.split(" – ")[1]}
+                </span>
+
+                {/* Status badge */}
+                {isPast && (
+                  <span className="mt-1 text-[8px] font-black uppercase tracking-widest bg-white/5 text-gray-600 px-2 py-0.5 rounded-full border border-white/10">
+                    PAST
+                  </span>
+                )}
+                {isBusy && (
+                  <span className="mt-1 text-[8px] font-black uppercase tracking-widest bg-red-950/60 text-red-500 px-2 py-0.5 rounded-full border border-red-800/40">
+                    FULL
+                  </span>
+                )}
+                {isSelected && (
+                  <span className="mt-1 text-[8px] font-black uppercase tracking-widest bg-[#22c55e]/20 text-[#22c55e] px-2 py-0.5 rounded-full border border-[#22c55e]/40">
+                    ✓ SELECTED
                   </span>
                 )}
               </button>
             );
           })}
         </div>
+        )}
       </div>
 
       {/* Booking Summary Sidebar */}
@@ -374,6 +487,10 @@ export default function Reservation() {
                 <div className="flex justify-between items-center text-sm">
                   <span className="text-gray-400 font-medium">Zone</span>
                   <span className="text-white font-bold">{activeTab} Zone</span>
+                </div>
+                <div className="flex justify-between items-center text-sm">
+                  <span className="text-gray-400 font-medium">Station</span>
+                  <span className="text-[#00D4FF] font-bold">{activeTab} {selectedStation}</span>
                 </div>
                 <div className="flex justify-between items-center text-sm">
                   <span className="text-gray-400 font-medium">Date</span>
@@ -393,7 +510,7 @@ export default function Reservation() {
                 <div className="flex flex-col gap-3 pt-4">
                   <span className="text-gray-400 font-medium flex items-center gap-2"><Users className="w-4 h-4" /> Select Number of Players</span>
                   <div className="flex flex-wrap items-center gap-2 bg-[#111111] p-2 rounded-xl border border-white/10">
-                    {Array.from({ length: activeTab === "Cele Lounge" ? 12 : 4 }, (_, i) => i + 1).map(num => (
+                    {Array.from({ length: activeTab === "Celebrations Lounge" ? 12 : 4 }, (_, i) => i + 1).map(num => (
                       <button
                         key={num}
                         onClick={() => setPlayers(num)}
@@ -407,21 +524,46 @@ export default function Reservation() {
               </div>
               
               <div className="space-y-3 pt-4 border-t border-white/10">
-                <input 
-                  type="text" 
-                  placeholder="Your Name"
-                  value={customerName}
-                  onChange={(e) => setCustomerName(e.target.value)}
-                  className="w-full bg-[#111111] border border-white/10 rounded-xl p-3 text-white focus:outline-none focus:border-[#00D4FF] text-sm"
-                />
-                <input 
-                  type="tel" 
-                  placeholder="Phone Number"
-                  value={phoneNumber}
-                  onChange={(e) => setPhoneNumber(e.target.value)}
-                  className="w-full bg-[#111111] border border-white/10 rounded-xl p-3 text-white focus:outline-none focus:border-[#00D4FF] text-sm"
-                />
-              </div>
+                {/* Name Input */}
+                <div className="flex flex-col gap-1">
+                  <input
+                    type="text"
+                    placeholder="Your Name"
+                    value={customerName}
+                    maxLength={50}
+                    onChange={(e) => {
+                      // allow only letters and spaces
+                      const val = e.target.value.replace(/[^a-zA-Z\s.]/g, "");
+                      setCustomerName(val);
+                      setNameError(validateName(val));
+                    }}
+                    className={`w-full bg-[#111111] border rounded-xl p-3 text-white focus:outline-none text-sm transition-colors ${
+                      nameError ? "border-red-500 focus:border-red-400" : "border-white/10 focus:border-[#00D4FF]"
+                    }`}
+                  />
+                  {nameError && <p className="text-red-400 text-xs font-medium pl-1">{nameError}</p>}
+                </div>
+
+                {/* Phone Input */}
+                <div className="flex flex-col gap-1">
+                  <input
+                    type="tel"
+                    placeholder="10-digit Mobile Number"
+                    value={phoneNumber}
+                    maxLength={10}
+                    onChange={(e) => {
+                      // allow only digits
+                      const val = e.target.value.replace(/\D/g, "").slice(0, 10);
+                      setPhoneNumber(val);
+                      setPhoneError(validatePhone(val));
+                    }}
+                    className={`w-full bg-[#111111] border rounded-xl p-3 text-white focus:outline-none text-sm transition-colors ${
+                      phoneError ? "border-red-500 focus:border-red-400" : "border-white/10 focus:border-[#00D4FF]"
+                    }`}
+                  />
+                  {phoneError && <p className="text-red-400 text-xs font-medium pl-1">{phoneError}</p>}
+                </div>
+                </div>
 
               <div className="pt-6 border-t border-white/10">
                 <div className="flex justify-between items-end mb-6">
@@ -433,7 +575,7 @@ export default function Reservation() {
                   disabled={isSubmitting}
                   className="w-full py-4 bg-[#DC2626] hover:bg-[#b91c1c] text-white font-heading font-black uppercase tracking-widest rounded-xl transition-all shadow-[0_0_20px_rgba(220,38,38,0.4)] hover:shadow-[0_0_30px_rgba(220,38,38,0.6)] flex justify-center items-center gap-2 active:scale-95"
                 >
-                  {isSubmitting ? <><Loader2 className="w-5 h-5 animate-spin" /> Processing...</> : "Confirm & Pay"}
+                  {isSubmitting ? <><Loader2 className="w-5 h-5 animate-spin" /> Processing...</> : "Confirm Reservation"}
                 </button>
               </div>
             </motion.div>

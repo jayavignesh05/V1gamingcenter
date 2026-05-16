@@ -1,5 +1,27 @@
+import type { Metadata } from "next";
 import { Suspense } from "react";
 import Reservation from "@/components/Reservation/Reservation";
+
+export const metadata: Metadata = {
+  title: "Book Your Gaming Station — Reserve Now",
+  description:
+    "Reserve your gaming station at V1 Gaming Center, 98 Red Hills Road, Kalpalayam, Chennai-600099. Choose your zone (PS5, PS4, VR, Simulation, VIP Lounge), date & time slot — instant online booking.",
+  keywords: [
+    "book gaming station Chennai",
+    "gaming reservation Chennai",
+    "PS5 booking Kalpalayam Chennai",
+    "VR gaming booking Chennai",
+    "online gaming center booking Chennai",
+    "reserve gaming lounge Chennai",
+  ],
+  alternates: { canonical: "/booking" },
+  openGraph: {
+    title: "Book Your Station | V1 Gaming Center Chennai",
+    description:
+      "Online booking for PS5, PS4, VR, Simulation & VIP Lounge gaming sessions at V1 Gaming Center, Kalpalayam, Chennai-600099.",
+    url: "https://www.v1gamingcenter.com/booking",
+  },
+};
 
 export default function Booking() {
   return (

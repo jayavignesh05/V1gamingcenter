@@ -19,13 +19,7 @@ const fadeIn = (delay = 0) => ({
 });
 
 export default function Home() {
-  const stats = [
-    { value: "50+", label: "Stations" },
-    { value: "PS5 & VR", label: "Zones" },
-    { value: "24/7", label: "Open" },
-    { value: "T Nagar", label: "Chennai" },
-  ];
-
+  
   const services = [
     { title: "Simulation Zone", icon: <Car className="w-8 h-8 text-[#00D4FF]" />, image: "https://images.unsplash.com/photo-1593305841991-05c297ba4575?auto=format&fit=crop&q=80", href: "/zones?zone=Simulation", desc: "Full-motion racing & flight sims", border: "hover:border-[#00D4FF] hover:shadow-[0_0_20px_rgba(0,212,255,0.3)]" },
     { title: "PS5 Zone", icon: <Gamepad2 className="w-8 h-8 text-[#DC2626]" />, image: "https://images.unsplash.com/photo-1606144042614-b2417e99c4e3?auto=format&fit=crop&q=80", href: "/zones?zone=PS5", desc: "4K OLED screens, DualSense haptics", border: "hover:border-[#DC2626] hover:shadow-[0_0_20px_rgba(220,38,38,0.3)]" },
@@ -89,25 +83,12 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ── STATS BAR ── */}
-      <section className="relative z-10 border-y border-white/10 bg-[#111111]/80 backdrop-blur-xl">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 divide-x-0 md:divide-x divide-white/10">
-            {stats.map((stat, idx) => (
-              <motion.div key={idx} initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.5, delay: idx * 0.08 }} className="text-center px-4">
-                <div className="text-3xl md:text-4xl font-heading font-black text-white mb-1">{stat.value}</div>
-                <div className="text-sm font-semibold text-[#DC2626] uppercase tracking-wider">{stat.label}</div>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
 
       {/* ── WHY V1? FEATURES ── */}
       <section className="relative z-10 py-20 bg-[#000000]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }} className="text-center mb-14">
-            <h2 className="text-4xl md:text-5xl font-heading font-black mb-4 text-white uppercase">Why <span className="text-[#DC2626]">V1 Gaming?</span></h2>
+            <h2 className="text-4xl md:text-5xl font-heading font-black mb-4 text-white uppercase">Why <span className="text-[#DC2626]">V1 Gaming cafe?</span></h2>
             <p className="text-gray-400 max-w-xl mx-auto">Everything engineered for the ultimate gaming experience.</p>
           </motion.div>
 

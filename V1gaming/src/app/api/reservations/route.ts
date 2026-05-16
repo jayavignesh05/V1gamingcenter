@@ -3,7 +3,8 @@ import pool from '@/lib/db';
 import { encrypt, decrypt } from '@/lib/crypto';
 import { RowDataPacket } from 'mysql2';
 
-/** Wrap any response payload in an encrypted envelope */
+
+
 function encryptedJson(data: unknown, status = 200) {
   return NextResponse.json({ d: encrypt(data) }, { status });
 }
@@ -18,7 +19,7 @@ export async function GET(request: Request) {
 
   try {
     const [rows] = await pool.query<RowDataPacket[]>(
-      'SELECT time_slot, console_id FROM reservations WHERE booking_date = ?',
+      'SELECT time_slot, console_id, station_id FROM reservations WHERE booking_date = ?',
       [date]
     );
 
@@ -40,6 +41,7 @@ export async function POST(request: Request) {
       booking_date: string;
       time_slots: string[];
       console_id: string;
+      station_id: string;
       players: number;
     };
     try {
@@ -48,32 +50,57 @@ export async function POST(request: Request) {
       return encryptedJson({ error: 'Invalid or tampered request payload' }, 400);
     }
 
-    const { customer_name, phone_number, booking_date, time_slots, console_id } = body;
+    const { customer_name, phone_number, booking_date, time_slots, console_id, station_id, players } = body;
 
+    // ── Validate name ──
+    const nameTrimmed = customer_name?.trim() ?? "";
+    if (!nameTrimmed || nameTrimmed.length < 2) {
+      return encryptedJson({ error: 'Please enter a valid name (min 2 characters).' }, 400);
+    }
+    if (!/^[a-zA-Z\s.]{2,50}$/.test(nameTrimmed)) {
+      return encryptedJson({ error: 'Name should contain only letters and spaces.' }, 400);
+    }
+
+    // ── Validate Indian phone number ──
+    const phoneTrimmed = phone_number?.trim().replace(/\s/g, '') ?? "";
+    if (!/^[6-9]\d{9}$/.test(phoneTrimmed)) {
+      return encryptedJson({ error: 'Enter a valid 10-digit Indian mobile number (starts with 6-9).' }, 400);
+    }
+
+    // ── Validate other required fields ──
     if (
-      !customer_name || !phone_number || !booking_date ||
+      !booking_date ||
       !time_slots || !Array.isArray(time_slots) ||
-      time_slots.length === 0 || !console_id
+      time_slots.length === 0 || !console_id || !station_id
     ) {
       return encryptedJson({ error: 'All fields are required' }, 400);
     }
 
-    // Check if any of the slots are already booked
-    const [existing] = await pool.query<RowDataPacket[]>(
-      'SELECT time_slot FROM reservations WHERE booking_date = ? AND console_id = ? AND time_slot IN (?)',
-      [booking_date, console_id, time_slots]
+    // Check if any of the selected slots are already taken for THIS specific station
+    const [existingRows] = await pool.query<RowDataPacket[]>(
+      `SELECT time_slot, COUNT(*) as cnt
+       FROM reservations
+       WHERE booking_date = ? AND console_id = ? AND station_id = ? AND time_slot IN (?)
+       GROUP BY time_slot`,
+      [booking_date, console_id, station_id, time_slots]
     );
 
-    if (existing.length > 0) {
-      const booked = existing.map(r => r.time_slot).join(', ');
-      return encryptedJson({ error: `Slots already booked: ${booked}` }, 409);
+    const fullyBooked = existingRows.map((r) => r.time_slot);
+
+    if (fullyBooked.length > 0) {
+      return encryptedJson(
+        { error: `Slots already booked: ${fullyBooked.join(', ')}` },
+        409
+      );
     }
 
-    // Insert all slots
-    const values = time_slots.map((slot: string) => [customer_name, phone_number, booking_date, slot, console_id]);
+    // Insert all slots — each slot row stores players count too
+    const values = time_slots.map((slot: string) => [
+      customer_name, phone_number, booking_date, slot, console_id, station_id, players ?? 1
+    ]);
 
     await pool.query(
-      'INSERT INTO reservations (customer_name, phone_number, booking_date, time_slot, console_id) VALUES ?',
+      'INSERT INTO reservations (customer_name, phone_number, booking_date, time_slot, console_id, station_id, players) VALUES ?',
       [values]
     );
 

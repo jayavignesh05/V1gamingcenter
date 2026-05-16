@@ -24,14 +24,16 @@ if (process.env.NODE_ENV !== 'production') globalForDb.pool = pool;
 export async function initDb() {
   const query = `
     CREATE TABLE IF NOT EXISTS reservations (
-      id INT AUTO_INCREMENT PRIMARY KEY,
+      id            INT AUTO_INCREMENT PRIMARY KEY,
       customer_name VARCHAR(255) NOT NULL,
-      phone_number VARCHAR(50) NOT NULL,
-      booking_date DATE NOT NULL,
-      time_slot VARCHAR(50) NOT NULL,
-      console_id VARCHAR(50) NOT NULL,
-      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-      UNIQUE KEY unique_booking (booking_date, time_slot, console_id)
+      phone_number  VARCHAR(50)  NOT NULL,
+      booking_date  DATE         NOT NULL,
+      time_slot     VARCHAR(100) NOT NULL,
+      console_id    VARCHAR(50)  NOT NULL,
+      station_id    VARCHAR(20)  NOT NULL DEFAULT 'Station 1',
+      players       INT          NOT NULL DEFAULT 1,
+      created_at    TIMESTAMP    DEFAULT CURRENT_TIMESTAMP,
+      UNIQUE KEY unique_station_booking (booking_date, console_id, station_id, time_slot)
     );
   `;
   try {
