@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
 import { Gamepad2, Loader2, Zap, CheckCircle2, AlertCircle, Users } from "lucide-react";
 import { motion } from "framer-motion";
+import { decryptClient } from "@/lib/crypto";
 
 interface Slot {
   time: string;
@@ -51,7 +52,8 @@ export default function Reservation() {
     try {
       const res = await fetch(`/api/reservations?date=${date}`);
       if (!res.ok) throw new Error("Failed to fetch");
-      const data = await res.json();
+      const envelope = await res.json();
+      const data = await decryptClient<Record<string, string>[]>(envelope.d);
       
       const ps5: Slot[] = DEFAULT_SLOTS.map(time => ({ time, status: "available" }));
       const ps4: Slot[] = DEFAULT_SLOTS.map(time => ({ time, status: "available" }));
@@ -176,7 +178,8 @@ export default function Reservation() {
         }),
       });
       
-      const data = await res.json();
+      const envelope = await res.json();
+      const data = await decryptClient<{ success?: boolean; error?: string; message?: string }>(envelope.d);
       if (!res.ok) throw new Error(data.error || "Failed to make reservation");
       
       setToast({ message: "Payment successful! Reservations Confirmed.", type: "success" });
@@ -205,11 +208,11 @@ export default function Reservation() {
           exit={{ opacity: 0, y: -20 }}
           className={`fixed top-24 left-1/2 -translate-x-1/2 z-[100] flex items-center gap-3 px-6 py-4 rounded-xl shadow-2xl border backdrop-blur-md font-medium text-white ${
             toast.type === 'success' 
-              ? 'bg-[#00FF41]/20 border-[#00FF41]/50 shadow-[0_0_30px_rgba(0,255,65,0.3)]' 
+              ? 'bg-[#DC2626]/20 border-[#DC2626]/50 shadow-[0_0_30px_rgba(220,38,38,0.3)]' 
               : 'bg-red-500/20 border-red-500/50 shadow-[0_0_30px_rgba(239,68,68,0.3)]'
           }`}
         >
-          {toast.type === 'success' ? <CheckCircle2 className="text-[#00FF41] w-6 h-6" /> : <AlertCircle className="text-red-400 w-6 h-6" />}
+          {toast.type === 'success' ? <CheckCircle2 className="text-[#DC2626] w-6 h-6" /> : <AlertCircle className="text-red-400 w-6 h-6" />}
           {toast.message}
         </motion.div>
       )}
@@ -219,7 +222,7 @@ export default function Reservation() {
         {/* Header & Date Picker */}
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 border-b border-white/10 pb-6 gap-6">
           <h3 className="text-2xl font-heading font-black text-white uppercase tracking-widest flex items-center gap-2">
-            <Zap className="w-6 h-6 text-[#00FF41]" /> Select Slot
+            <Zap className="w-6 h-6 text-[#DC2626]" /> Select Slot
           </h3>
           <div className="w-full sm:w-auto">
             <input
@@ -227,7 +230,7 @@ export default function Reservation() {
               min={new Date().toISOString().split("T")[0]}
               onKeyDown={(e) => e.preventDefault()}
               onClick={(e) => (e.target as any).showPicker?.()}
-              className="w-full bg-[#111111] border border-white/10 rounded-xl p-3 text-white focus:outline-none focus:border-[#00FF41] font-medium cursor-pointer"
+              className="w-full bg-[#111111] border border-white/10 rounded-xl p-3 text-white focus:outline-none focus:border-[#DC2626] font-medium cursor-pointer"
               value={selectedDate}
               onChange={(e) => setSelectedDate(e.target.value)}
             />
@@ -242,8 +245,8 @@ export default function Reservation() {
               onClick={() => setActiveTab(tab as any)}
               className={`px-6 py-3 font-heading font-bold uppercase text-sm rounded-xl transition-all ${
                 activeTab === tab 
-                  ? "bg-[#00FF41] text-[#000000] shadow-[0_0_15px_rgba(0,255,65,0.4)]" 
-                  : "bg-[#111111] border border-white/5 text-gray-400 hover:text-white hover:border-[#00FF41]/50"
+                  ? "bg-[#DC2626] text-white shadow-[0_0_15px_rgba(220,38,38,0.4)]" 
+                  : "bg-[#111111] border border-white/5 text-gray-400 hover:text-white hover:border-[#DC2626]/50"
               }`}
             >
               {tab} Zone
@@ -253,7 +256,7 @@ export default function Reservation() {
 
         {isLoading && (
           <div className="absolute inset-0 flex items-center justify-center bg-[#111111]/80 backdrop-blur-sm z-10 rounded-2xl">
-            <Loader2 className="w-12 h-12 text-[#00FF41] animate-spin" />
+            <Loader2 className="w-12 h-12 text-[#DC2626] animate-spin" />
           </div>
         )}
 
@@ -268,15 +271,20 @@ export default function Reservation() {
                 key={`${activeTab}-${index}`}
                 disabled={!isAvailable}
                 onClick={() => handleSlotClick(activeTab, slot.time, slot.status)}
-                className={`py-4 px-2 font-bold text-sm rounded-xl transition-all border flex items-center justify-center ${
+                className={`py-3 px-2 font-bold text-sm rounded-xl transition-all border flex flex-col items-center justify-center gap-1 ${
                   isAvailable
                     ? isSelected
                       ? "bg-[#00D4FF]/20 border-[#00D4FF] text-[#00D4FF] shadow-[0_0_20px_rgba(0,212,255,0.5)] scale-105"
-                      : "bg-[#111111] border-[#00FF41]/30 text-white shadow-[inset_0_0_10px_rgba(0,255,65,0.1)] hover:border-[#00FF41] hover:shadow-[0_0_15px_rgba(0,255,65,0.3)]"
-                    : "bg-[#111111]/50 border-red-500/20 text-red-500/40 cursor-not-allowed"
+                      : "bg-[#111111] border-[#DC2626]/30 text-white shadow-[inset_0_0_10px_rgba(220,38,38,0.1)] hover:border-[#DC2626] hover:shadow-[0_0_15px_rgba(220,38,38,0.3)] cursor-pointer"
+                    : "bg-[#0A0A0A] border-white/5 text-gray-600 cursor-not-allowed opacity-60"
                 }`}
               >
-                {slot.time}
+                <span className={!isAvailable ? "line-through text-xs" : ""}>{slot.time}</span>
+                {!isAvailable && (
+                  <span className="text-[9px] font-black uppercase tracking-widest bg-red-900/50 text-red-400 px-1.5 py-0.5 rounded-md border border-red-800/50">
+                    Booked
+                  </span>
+                )}
               </button>
             );
           })}
@@ -348,7 +356,7 @@ export default function Reservation() {
               <div className="pt-6 border-t border-white/10">
                 <div className="flex justify-between items-end mb-6">
                   <span className="text-gray-400 font-medium">Total ({selectedSlots.length} {selectedSlots.length === 1 ? 'Hour' : 'Hours'})</span>
-                  <span className="text-4xl font-heading font-black text-[#00FF41]">₹{getPrice(activeTab, players, selectedSlots.length)}</span>
+                  <span className="text-4xl font-heading font-black text-[#DC2626]">₹{getPrice(activeTab, players, selectedSlots.length)}</span>
                 </div>
                 <button 
                   onClick={handleReservation}

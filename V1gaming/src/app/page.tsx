@@ -14,16 +14,16 @@ export default function Home() {
 
   const services = [
     { title: "Simulation Zone", icon: <Car className="w-8 h-8 text-[#00D4FF]" />, href: "/zones", border: "hover:border-[#00D4FF] hover:shadow-[0_0_20px_rgba(0,212,255,0.4)]" },
-    { title: "PS5 & PS4 Zone", icon: <Gamepad2 className="w-8 h-8 text-[#00FF41]" />, href: "/zones", border: "hover:border-[#00FF41] hover:shadow-[0_0_20px_rgba(0,255,65,0.4)]" },
+    { title: "PS5 & PS4 Zone", icon: <Gamepad2 className="w-8 h-8 text-[#DC2626]" />, href: "/zones", border: "hover:border-[#DC2626] hover:shadow-[0_0_20px_rgba(220,38,38,0.4)]" },
     { title: "VIP Lounge", icon: <Crown className="w-8 h-8 text-[#FF006E]" />, href: "/lounge", border: "hover:border-[#FF006E] hover:shadow-[0_0_20px_rgba(255,0,110,0.4)]" },
   ];
 
   return (
-    <main className="min-h-screen relative selection:bg-[#00FF41]/30">
+    <main className="min-h-screen relative selection:bg-[#DC2626]/30">
       {/* Hero Section */}
       <section className="relative w-full h-screen flex flex-col items-center justify-center overflow-hidden pt-20">
         <div className="absolute inset-0 z-0 bg-[#000000]">
-          <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-[#00FF41]/10 rounded-full blur-[120px] animate-pulse"></div>
+          <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-[#DC2626]/10 rounded-full blur-[120px] animate-pulse"></div>
           <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-[#00D4FF]/10 rounded-full blur-[120px] animate-pulse" style={{ animationDelay: "2s" }}></div>
           <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&q=80')] bg-cover bg-center opacity-30 mix-blend-luminosity"></div>
           <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#000000]/80 to-[#000000]"></div>
@@ -36,12 +36,12 @@ export default function Home() {
             className="text-6xl md:text-8xl lg:text-9xl font-heading font-black tracking-tighter mb-6 text-white drop-shadow-[0_0_20px_rgba(255,255,255,0.3)] leading-none uppercase"
           >
             LEVEL UP <br />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#00FF41] via-[#00D4FF] to-[#FF006E]">YOUR GAME</span>
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#DC2626] via-[#FF4444] to-[#FF006E]">YOUR GAME</span>
           </motion.h1>
           <p className="text-xl md:text-2xl text-gray-400 mb-10 max-w-3xl mx-auto font-medium tracking-wide">
             The Ultimate Premium Esports Lounge in Chennai.
           </p>
-          <Link href="/booking" className="group relative inline-flex items-center justify-center px-10 py-5 font-heading font-bold text-[#000000] bg-[#00FF41] rounded-full overflow-hidden transition-all hover:scale-105 shadow-[0_0_30px_rgba(0,255,65,0.6)] focus:outline-none uppercase tracking-widest text-lg">
+          <Link href="/booking" className="group relative inline-flex items-center justify-center px-10 py-5 font-heading font-bold text-white bg-[#DC2626] rounded-full overflow-hidden transition-all hover:scale-105 shadow-[0_0_30px_rgba(220,38,38,0.6)] focus:outline-none uppercase tracking-widest text-lg">
             <span className="absolute w-0 h-0 transition-all duration-500 ease-out bg-white rounded-full group-hover:w-72 group-hover:h-72 opacity-20"></span>
             <span className="relative flex items-center gap-3">
               BOOK YOUR STATION
@@ -57,7 +57,7 @@ export default function Home() {
             {stats.map((stat, idx) => (
               <div key={idx} className="text-center px-4">
                 <div className="text-3xl md:text-4xl font-heading font-black text-white mb-1 drop-shadow-[0_0_10px_rgba(255,255,255,0.2)]">{stat.value}</div>
-                <div className="text-sm font-semibold text-[#00FF41] uppercase tracking-wider">{stat.label}</div>
+                <div className="text-sm font-semibold text-[#DC2626] uppercase tracking-wider">{stat.label}</div>
               </div>
             ))}
           </div>

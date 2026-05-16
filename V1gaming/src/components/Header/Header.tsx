@@ -2,9 +2,10 @@
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Gamepad2, Menu, X } from "lucide-react";
+import { Menu, X } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import Image from "next/image";
 
 export default function Header() {
   const pathname = usePathname();
@@ -26,12 +27,17 @@ export default function Header() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-20">
           {/* Logo */}
-          <Link href="/" className="flex items-center gap-2 sm:gap-3 cursor-pointer group z-50" onClick={() => setIsMobileMenuOpen(false)}>
-            <div className="p-1.5 sm:p-2 bg-[#00FF41]/10 rounded-xl border border-[#00FF41]/30 group-hover:bg-[#00FF41]/20 transition-colors">
-              <Gamepad2 className="w-5 h-5 sm:w-6 sm:h-6 text-[#00FF41]" />
-            </div>
-            <span className="font-heading font-black text-xl sm:text-2xl tracking-widest text-white uppercase">
-              V1<span className="text-[#00FF41]">GAMING</span>
+          <Link href="/" className="flex items-center gap-1 cursor-pointer group z-50" onClick={() => setIsMobileMenuOpen(false)}>
+            <Image
+              src="/images/V1logo.png"
+              alt="V1 Gaming Logo"
+              width={56}
+              height={56}
+              className="h-12 w-12 object-contain group-hover:opacity-90 transition-opacity flex-shrink-0"
+              priority
+            />
+            <span className="font-heading font-black text-lg sm:text-xl tracking-wider text-white uppercase leading-none">
+              V1<span className="text-[#DC2626]">gaming</span><span className="text-gray-400 font-semibold">cafe</span>
             </span>
           </Link>
 
@@ -42,7 +48,7 @@ export default function Header() {
                 key={link.name} 
                 href={link.path}
                 className={`text-sm font-semibold tracking-wide uppercase transition-all hover:-translate-y-0.5 ${
-                  pathname === link.path ? "text-[#00FF41] drop-shadow-[0_0_10px_rgba(0,255,65,0.5)]" : "text-gray-400 hover:text-[#00FF41]"
+                  pathname === link.path ? "text-[#DC2626] drop-shadow-[0_0_10px_rgba(220,38,38,0.5)]" : "text-gray-400 hover:text-[#DC2626]"
                 }`}
               >
                 {link.name}
@@ -54,7 +60,7 @@ export default function Header() {
           <div className="flex items-center gap-3 sm:gap-4 z-50">
             <Link
               href="/booking"
-              className="hidden sm:flex items-center justify-center px-4 sm:px-6 py-2 sm:py-2.5 text-xs sm:text-sm font-heading font-bold uppercase tracking-wider text-[#000000] bg-[#00FF41] rounded-full hover:bg-[#00FF41]/90 transition-all shadow-[0_0_20px_rgba(0,255,65,0.4)] hover:shadow-[0_0_30px_rgba(0,255,65,0.6)]"
+              className="hidden sm:flex items-center justify-center px-4 sm:px-6 py-2 sm:py-2.5 text-xs sm:text-sm font-heading font-bold uppercase tracking-wider text-white bg-[#DC2626] rounded-full hover:bg-[#DC2626]/90 transition-all shadow-[0_0_20px_rgba(220,38,38,0.4)] hover:shadow-[0_0_30px_rgba(220,38,38,0.6)]"
             >
               Book Station
             </Link>
@@ -62,7 +68,7 @@ export default function Header() {
             {/* Mobile Menu Toggle Button */}
             <button
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="lg:hidden p-2 rounded-lg bg-white/5 border border-white/10 text-gray-300 hover:text-[#00FF41] transition-colors"
+              className="lg:hidden p-2 rounded-lg bg-white/5 border border-white/10 text-gray-300 hover:text-[#DC2626] transition-colors"
               aria-label="Toggle Menu"
             >
               {isMobileMenuOpen ? <X className="w-5 h-5 sm:w-6 sm:h-6" /> : <Menu className="w-5 h-5 sm:w-6 sm:h-6" />}
@@ -94,8 +100,8 @@ export default function Header() {
                     onClick={() => setIsMobileMenuOpen(false)}
                     className={`block py-4 text-sm sm:text-base font-semibold tracking-wide uppercase transition-colors border-b border-white/5 ${
                       pathname === link.path 
-                        ? "text-[#00FF41] drop-shadow-[0_0_10px_rgba(0,255,65,0.5)]" 
-                        : "text-gray-400 hover:text-[#00FF41]"
+                        ? "text-[#DC2626] drop-shadow-[0_0_10px_rgba(220,38,38,0.5)]" 
+                        : "text-gray-400 hover:text-[#DC2626]"
                     }`}
                   >
                     {link.name}
@@ -112,7 +118,7 @@ export default function Header() {
                 <Link
                   href="/booking"
                   onClick={() => setIsMobileMenuOpen(false)}
-                  className="flex items-center justify-center w-full px-6 py-3 font-heading font-bold uppercase tracking-wider text-[#000000] bg-[#00FF41] rounded-lg shadow-[0_0_20px_rgba(0,255,65,0.4)]"
+                  className="flex items-center justify-center w-full px-6 py-3 font-heading font-bold uppercase tracking-wider text-white bg-[#DC2626] rounded-lg shadow-[0_0_20px_rgba(220,38,38,0.4)]"
                 >
                   Book Your Station
                 </Link>

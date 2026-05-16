@@ -1,5 +1,6 @@
-import { Gamepad2, Camera, PlayCircle, MapPin, Mail, Phone } from "lucide-react";
+import { Camera, PlayCircle, MapPin, Mail, Phone, Gamepad2 } from "lucide-react";
 import Link from "next/link";
+import Image from "next/image";
 
 export default function Footer() {
   return (
@@ -9,17 +10,23 @@ export default function Footer() {
           
           {/* Brand */}
           <div className="col-span-1 md:col-span-1">
-            <Link href="/" className="flex items-center gap-3 mb-4">
-              <Gamepad2 className="w-8 h-8 text-[#00FF41]" />
-              <span className="font-heading font-black text-2xl tracking-widest text-white uppercase">
-                V1<span className="text-[#00FF41]">GAMING</span>
+            <Link href="/" className="flex items-center gap-1 mb-4">
+              <Image
+                src="/images/V1logo.png"
+                alt="V1 Gaming Logo"
+                width={56}
+                height={56}
+                className="h-12 w-12 object-contain flex-shrink-0"
+              />
+              <span className="font-heading font-black text-xl tracking-wider text-white uppercase leading-none">
+                V1<span className="text-[#DC2626]">gaming</span><span className="text-gray-400 font-semibold">cafe</span>
               </span>
             </Link>
             <p className="text-gray-400 text-sm font-medium mb-6">
               The ultimate premium esports lounge and gaming center in Chennai.
             </p>
             <div className="flex items-center gap-4">
-              <a href="https://www.instagram.com/v1gamingcafe/" target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full bg-[#000000] flex items-center justify-center text-gray-400 hover:text-[#00FF41] hover:shadow-[0_0_15px_rgba(0,255,65,0.3)] transition-all">
+              <a href="https://www.instagram.com/v1gamingcafe/" target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full bg-[#000000] flex items-center justify-center text-gray-400 hover:text-[#DC2626] hover:shadow-[0_0_15px_rgba(220,38,38,0.3)] transition-all">
                 <Camera className="w-5 h-5" />
               </a>
               <a href="#" className="w-10 h-10 rounded-full bg-[#000000] flex items-center justify-center text-gray-400 hover:text-[#FF006E] hover:shadow-[0_0_15px_rgba(255,0,110,0.3)] transition-all">
@@ -34,7 +41,7 @@ export default function Footer() {
             <ul className="space-y-3">
               {["Home", "Gaming Zones", "VIP Lounge", "Sales & Service"].map((link) => (
                 <li key={link}>
-                  <Link href="#" className="text-gray-400 hover:text-[#00FF41] text-sm font-medium transition-colors">
+                  <Link href="#" className="text-gray-400 hover:text-[#DC2626] text-sm font-medium transition-colors">
                     {link}
                   </Link>
                 </li>
@@ -60,8 +67,8 @@ export default function Footer() {
                 </a>
               </li>
               <li className="flex items-center gap-3 text-gray-400 text-sm font-medium">
-                <Phone className="w-5 h-5 text-[#00FF41] flex-shrink-0" />
-                <a href="tel:+919092095300" className="hover:text-[#00FF41] transition-colors">+91 90920 95300</a>
+                <Phone className="w-5 h-5 text-[#DC2626] flex-shrink-0" />
+                <a href="tel:+919092095300" className="hover:text-[#DC2626] transition-colors">+91 90920 95300</a>
               </li>
               <li className="flex items-center gap-3 text-gray-400 text-sm font-medium">
                 <Mail className="w-5 h-5 text-[#FF006E] flex-shrink-0" />

@@ -12,10 +12,10 @@ export default function GamingZones() {
       price: "₹199/hr",
       description: "Next-gen immersive gameplay. (₹150/hr for 4 Players)",
       specs: ["PlayStation 5 Console", "65-inch 4K OLED HDR TVs", "DualSense Wireless Controllers", "Pulse 3D Wireless Headset"],
-      icon: <Gamepad2 className="w-12 h-12 text-[#00FF41]" />,
-      color: "border-[#00FF41]",
-      bg: "hover:bg-[#00FF41]/5",
-      btn: "bg-[#00FF41] hover:bg-[#00FF41]/90 text-black shadow-[0_0_20px_rgba(0,255,65,0.4)]",
+      icon: <Gamepad2 className="w-12 h-12 text-[#DC2626]" />,
+      color: "border-[#DC2626]",
+      bg: "hover:bg-[#DC2626]/5",
+      btn: "bg-[#DC2626] hover:bg-[#DC2626]/90 text-white shadow-[0_0_20px_rgba(220,38,38,0.4)]",
     },
     {
       tab: "PS4",
@@ -53,7 +53,7 @@ export default function GamingZones() {
   ];
 
   return (
-    <main className="min-h-screen pt-32 pb-24 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto selection:bg-[#00FF41]/30">
+    <main className="min-h-screen pt-32 pb-24 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto selection:bg-[#DC2626]/30">
       <div className="text-center mb-16 relative z-10">
         <h1 className="text-5xl md:text-7xl font-heading font-black mb-4 uppercase text-white drop-shadow-[0_0_20px_rgba(255,255,255,0.1)]">
           GAMING <span className="text-[#00D4FF]">ZONES</span>

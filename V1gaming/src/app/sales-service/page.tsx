@@ -35,7 +35,7 @@ export default function SalesService() {
         <div className="w-full lg:w-1/2">
           <div className="mb-8 border-b border-white/10 pb-4">
             <h2 className="text-3xl font-heading font-black text-white uppercase flex items-center gap-3">
-              <span className="w-3 h-8 bg-[#00FF41] rounded-sm"></span> Hardware Sales
+              <span className="w-3 h-8 bg-[#DC2626] rounded-sm"></span> Hardware Sales
             </h2>
           </div>
           
@@ -43,11 +43,11 @@ export default function SalesService() {
             {sales.map((item, idx) => (
               <div key={idx} className="bg-[#111111] rounded-2xl p-1 shadow-[0_0_15px_rgba(0,255,65,0.05)] hover:shadow-[0_0_20px_rgba(0,255,65,0.2)] transition-shadow group">
                 <div className="bg-[#111111] border border-white/5 h-full rounded-2xl p-6 flex flex-col items-center text-center relative overflow-hidden">
-                  <div className="absolute inset-0 bg-gradient-to-br from-[#00FF41]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                  <div className="absolute inset-0 bg-gradient-to-br from-[#DC2626]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
                   <img src={item.image} alt={item.title} className="h-24 object-contain mb-6 drop-shadow-xl group-hover:scale-110 transition-transform" />
                   <h3 className="text-lg font-heading font-bold text-white uppercase mb-2">{item.title}</h3>
-                  <div className="text-[#00FF41] font-bold text-xl mb-4">{item.price}</div>
-                  <button className="w-full py-2 border border-[#00FF41] text-[#00FF41] hover:bg-[#00FF41]/10 rounded-lg font-bold text-sm uppercase tracking-wider transition-colors relative z-10">
+                  <div className="text-[#DC2626] font-bold text-xl mb-4">{item.price}</div>
+                  <button className="w-full py-2 border border-[#DC2626] text-[#DC2626] hover:bg-[#DC2626]/10 rounded-lg font-bold text-sm uppercase tracking-wider transition-colors relative z-10">
                     View Details
                   </button>
                 </div>

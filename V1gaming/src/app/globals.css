@@ -36,7 +36,7 @@ body {
 }
 
 .glass-card {
-  @apply bg-[#111111]/80 backdrop-blur-xl border border-white/5 transition-all duration-300 rounded-2xl overflow-hidden shadow-none hover:border-[#00FF41] hover:shadow-[0_0_20px_rgba(0,255,65,0.4)] hover:-translate-y-1;
+  @apply bg-[#111111]/80 backdrop-blur-xl border border-white/5 transition-all duration-300 rounded-2xl overflow-hidden shadow-none hover:border-[#DC2626] hover:shadow-[0_0_20px_rgba(220,38,38,0.4)] hover:-translate-y-1;
 }
 
 .bento-grid {
