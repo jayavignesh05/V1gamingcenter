@@ -158,7 +158,7 @@ const localBusinessSchema = {
     "https://www.instagram.com/v1gamingcenter",
     "https://www.facebook.com/v1gamingcenter",
   ],
-  telephone: "+91-XXXXXXXXXX",
+  telephone: "+91-9092095300",
   hasMap: `https://www.google.com/maps/search/V1+Gaming+Center+Kalpalayam+Chennai`,
 };
 
