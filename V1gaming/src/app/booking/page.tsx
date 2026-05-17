@@ -24,7 +24,7 @@ export const metadata: Metadata = {
     title: "Book Your Station | V1 Gaming Center Chennai",
     description:
       "Online booking for PS5, PS4, VR, Simulation & VIP Lounge gaming sessions at V1 Gaming Center, Kalpalayam, Chennai-600099.",
-    url: "https://www.v1gamingcenter.com/booking",
+    url: "https://www.v1gamingcafe.com/booking",
   },
 };
 

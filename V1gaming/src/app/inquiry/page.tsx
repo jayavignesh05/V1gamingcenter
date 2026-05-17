@@ -18,7 +18,7 @@ export const metadata: Metadata = {
     title: "Contact Us | V1 Gaming Center Chennai",
     description:
       "Reach out for group bookings, corporate events, or general inquiries at V1 Gaming Center, Kalpalayam, Chennai-600099.",
-    url: "https://www.v1gamingcenter.com/inquiry",
+    url: "https://www.v1gamingcafe.com/inquiry",
   },
 };
 

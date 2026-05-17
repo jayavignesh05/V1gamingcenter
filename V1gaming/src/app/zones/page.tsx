@@ -23,7 +23,7 @@ export const metadata: Metadata = {
     title: "Gaming Zones | V1 Gaming Center Chennai",
     description:
       "PS5, PS4, VR & Simulation gaming zones — book your arena at V1 Gaming Center, Kalpalayam, Chennai-600099.",
-    url: "https://www.v1gamingcenter.com/zones",
+    url: "https://www.v1gamingcafe.com/zones",
   },
 };
 

@@ -18,7 +18,7 @@ const inter = Inter({
   display: "swap",
 });
 
-const SITE_URL = "https://www.v1gamingcenter.com";
+const SITE_URL = "https://www.v1gamingcafe.com";
 const SITE_NAME = "V1 Gaming Center";
 
 export const metadata: Metadata = {

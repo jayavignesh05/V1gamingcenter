@@ -19,7 +19,7 @@ export const metadata: Metadata = {
     title: "VIP Lounge | V1 Gaming Center Chennai",
     description:
       "Private gaming experience with 85-inch 4K displays, recliners & surround sound. Perfect for celebrations & corporate events.",
-    url: "https://www.v1gamingcenter.com/lounge",
+    url: "https://www.v1gamingcafe.com/lounge",
   },
 };
 

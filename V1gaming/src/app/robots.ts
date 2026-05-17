@@ -9,7 +9,7 @@ export default function robots(): MetadataRoute.Robots {
         disallow: ["/api/", "/_next/"],
       },
     ],
-    sitemap: "https://www.v1gamingcenter.com/sitemap.xml",
-    host: "https://www.v1gamingcenter.com",
+    sitemap: "https://www.v1gamingcafe.com/sitemap.xml",
+    host: "https://www.v1gamingcafe.com",
   };
 }
