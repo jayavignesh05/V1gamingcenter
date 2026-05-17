@@ -67,12 +67,52 @@ export default function Home() {
             The Ultimate Premium Esports Lounge in Chennai.
           </motion.p>
 
+          {/* ── HERO ── */}
+          {/* ... (previous hero content) */}
+
+          <motion.p {...fadeUp(0.45)} className="text-lg md:text-xl text-gray-400 mb-10 max-w-2xl mx-auto font-medium tracking-wide">
+            The Ultimate Premium Esports Lounge in Chennai.
+          </motion.p>
+
           <motion.div {...fadeUp(0.6)}>
-            <Link href="/booking" className="group relative inline-flex items-center justify-center px-10 py-5 font-heading font-bold text-white bg-[#DC2626] rounded-full overflow-hidden transition-all hover:scale-105 active:scale-95 shadow-[0_0_30px_rgba(220,38,38,0.5)] hover:shadow-[0_0_50px_rgba(220,38,38,0.8)] uppercase tracking-widest text-lg">
-              <span className="absolute w-0 h-0 transition-all duration-500 ease-out bg-white rounded-full group-hover:w-80 group-hover:h-80 opacity-10" />
-              <span className="relative flex items-center gap-3">BOOK YOUR STATION <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" /></span>
+            {/* Removed overflow-hidden from Link wrapper */}
+            <Link href="/booking" className="group relative inline-flex items-center justify-center px-10 py-5 font-heading font-bold text-white bg-[#DC2626] rounded-full transition-all hover:scale-105 active:scale-95 shadow-[0_0_30px_rgba(220,38,38,0.5)] hover:shadow-[0_0_50px_rgba(220,38,38,0.8)] uppercase tracking-widest text-lg">
+              
+              {/* White hover flare (clipped inside the button) */}
+              <div className="absolute inset-0 overflow-hidden rounded-full pointer-events-none">
+                <span className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-0 h-0 transition-all duration-500 ease-out bg-white rounded-full group-hover:w-[400px] group-hover:h-[400px] opacity-10" />
+              </div>
+
+              {/* ── Flying Joystick IMAGES (Unclipped) ── */}
+              {/* Image 1 - Top Left */}
+              <img 
+                src="/images/joystick.webp" // Update this path if needed
+                alt="joystick" 
+                className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-8 h-8 opacity-0 transition-all duration-500 ease-out group-hover:-translate-y-16 group-hover:-translate-x-24 group-hover:-rotate-12 group-hover:opacity-100 pointer-events-none drop-shadow-[0_0_15px_rgba(255,255,255,0.6)]" 
+              />
+              
+              {/* Image 2 - Top Right */}
+              <img 
+                src="/images/joystick.webp" // Using the same image, slightly larger
+                alt="joystick" 
+                className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-10 h-10 opacity-0 transition-all duration-700 ease-out group-hover:-translate-y-20 group-hover:translate-x-20 group-hover:rotate-45 group-hover:opacity-100 pointer-events-none drop-shadow-[0_0_15px_rgba(0,212,255,0.5)]" // Added blueish shadow
+              />
+              
+              {/* Image 3 - Bottom Left */}
+              <img 
+                src="/images/joystick.webp" // slightly smaller
+                alt="joystick" 
+                className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-7 h-7 opacity-0 transition-all duration-400 ease-out group-hover:translate-y-10 group-hover:-translate-x-20 group-hover:-rotate-45 group-hover:opacity-100 pointer-events-none drop-shadow-[0_0_15px_rgba(255,215,0,0.5)]" // Added golden shadow
+              />
+
+              {/* Button Text */}
+              <span className="relative z-10 flex items-center gap-3">
+                BOOK YOUR STATION <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+              </span>
             </Link>
           </motion.div>
+
+          {/* ... (scroll indicator) */}
 
           <motion.div {...fadeIn(1.2)} className="mt-16 flex flex-col items-center gap-2">
             <span className="text-gray-600 text-xs uppercase tracking-widest font-medium">Scroll to explore</span>

@@ -197,6 +197,11 @@ export default function RootLayout({
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(localBusinessSchema) }}
         />
+        {/* Lottie Web Player Script */}
+        <Script
+          src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"
+          strategy="beforeInteractive"
+        />
       </head>
       <body suppressHydrationWarning className="min-h-full flex flex-col bg-[#000000] text-gray-200 font-sans noise-bg">
         <Header />

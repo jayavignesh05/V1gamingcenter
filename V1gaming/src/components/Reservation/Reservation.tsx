@@ -36,6 +36,14 @@ const getISTDateString = (): string => {
   return istDate.toISOString().split("T")[0];
 };
 
+declare global {
+  namespace JSX {
+    interface IntrinsicElements {
+      'lottie-player': any;
+    }
+  }
+}
+
 export default function Reservation() {
   const [selectedDate, setSelectedDate] = useState<string>(getISTDateString());
   const [selectedSlots, setSelectedSlots] = useState<{ type: string; time: string }[]>([]);
@@ -390,19 +398,20 @@ export default function Reservation() {
           </div>
         )}
 
-        {/* Skeleton grid while loading — blocks interaction */}
+        {/* custom Lottie animation loader while fetching slots */}
         {isLoading ? (
-          <div className="grid grid-cols-2 xs:grid-cols-3 sm:grid-cols-4 gap-3 sm:gap-4">
-            {Array.from({ length: 13 }).map((_, i) => (
-              <div
-                key={i}
-                className="py-4 px-3 rounded-2xl border border-white/5 bg-[#0d0d0d] flex flex-col items-center justify-center gap-2 animate-pulse"
-              >
-                <div className="h-3 w-16 bg-white/10 rounded-full" />
-                <div className="h-2 w-2 bg-white/5 rounded-full" />
-                <div className="h-2.5 w-14 bg-white/5 rounded-full" />
-              </div>
-            ))}
+          <div className="flex flex-col items-center justify-center py-16 min-h-[300px] bg-[#0d0d0d]/40 rounded-2xl border border-white/5 backdrop-blur-sm transform-gpu will-change-transform">
+            <lottie-player
+              src="/lottie/gaming.json"
+              background="transparent"
+              speed="1.2"
+              style={{ width: "200px", height: "200px" }}
+              loop
+              autoplay
+            ></lottie-player>
+            <p className="text-gray-400 font-heading font-black text-xs uppercase tracking-widest animate-pulse mt-4">
+              Checking Seat Availability...
+            </p>
           </div>
         ) : (
         <div className="grid grid-cols-2 xs:grid-cols-3 sm:grid-cols-4 gap-3 sm:gap-4">
