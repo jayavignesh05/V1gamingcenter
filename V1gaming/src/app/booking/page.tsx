@@ -5,7 +5,7 @@ import Reservation from "@/components/Reservation/Reservation";
 export const metadata: Metadata = {
   title: "Book Your Gaming Station — Reserve Now",
   description:
-    "Reserve your gaming station at V1 Gaming Center, 98 Red Hills Road, Kalpalayam, Chennai-600099. Choose your zone (PS5, PS4, VR, Simulation, VIP Lounge), date & time slot — instant online booking.",
+    "Reserve your premium station at V1 Gaming Center, Chennai. Book PS5 & PS4 Zones, VR, Simulation, Celebrations Lounge (birthday parties, gaming tournaments) or OTT Lounge (watch live sports, cricket matches, private movie screenings). Choose your date & time slot for instant online booking.",
   keywords: [
     "book gaming station Chennai",
     "gaming reservation Chennai",
@@ -13,6 +13,11 @@ export const metadata: Metadata = {
     "VR gaming booking Chennai",
     "online gaming center booking Chennai",
     "reserve gaming lounge Chennai",
+    "birthday party lounge Chennai booking",
+    "OTT lounge booking Chennai",
+    "watch live cricket match lounge Chennai",
+    "private movie screening Chennai cafe",
+    "celebrations lounge booking V1"
   ],
   alternates: { canonical: "/booking" },
   openGraph: {

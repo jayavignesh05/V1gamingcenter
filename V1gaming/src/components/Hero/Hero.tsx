@@ -14,7 +14,7 @@ export default function Hero() {
           className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-[#FF007F]/20 rounded-full blur-[120px] animate-pulse"
           style={{ animationDelay: "2s" }}
         ></div>
-        <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1606144042614-b2417e99c4e3?auto=format&fit=crop&q=80')] bg-cover bg-center opacity-20 mix-blend-luminosity"></div>
+        <div className="absolute inset-0 bg-[url('/images/ps5.jpg')] bg-cover bg-center opacity-20 mix-blend-luminosity"></div>
         <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/80 to-black"></div>
       </div>
 

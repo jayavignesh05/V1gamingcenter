@@ -75,7 +75,7 @@ export default function Lounge() {
             className="w-full lg:w-1/2"
           >
             <div className="relative aspect-video rounded-none border border-[#FF007F]/20 bg-black overflow-hidden flex items-center justify-center shadow-[0_0_50px_rgba(255,0,127,0.1)] group">
-              <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1593508512255-86ab42a8e620?auto=format&fit=crop&q=80')] bg-cover bg-center opacity-30 group-hover:opacity-50 transition-opacity duration-700 mix-blend-luminosity"></div>
+              <div className="absolute inset-0 bg-[url('/images/viplounge.jpg')] bg-cover bg-center opacity-30 group-hover:opacity-50 transition-opacity duration-700 mix-blend-luminosity"></div>
               <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent"></div>
               <Crown className="w-24 h-24 text-[#FF007F]/50 relative z-10" />
             </div>

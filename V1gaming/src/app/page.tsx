@@ -21,10 +21,10 @@ const fadeIn = (delay = 0) => ({
 export default function Home() {
   
   const services = [
-    { title: "Simulation Zone", icon: <Car className="w-8 h-8 text-[#00D4FF]" />, image: "https://images.unsplash.com/photo-1593305841991-05c297ba4575?auto=format&fit=crop&q=80", href: "/zones?zone=Simulation", desc: "Full-motion racing & flight sims", border: "hover:border-[#00D4FF] hover:shadow-[0_0_20px_rgba(0,212,255,0.3)]" },
-    { title: "PS5 Zone", icon: <Gamepad2 className="w-8 h-8 text-[#DC2626]" />, image: "https://images.unsplash.com/photo-1606144042614-b2417e99c4e3?auto=format&fit=crop&q=80", href: "/zones?zone=PS5", desc: "4K OLED screens, DualSense haptics", border: "hover:border-[#DC2626] hover:shadow-[0_0_20px_rgba(220,38,38,0.3)]" },
-    { title: "PS4 Zone", icon: <Gamepad2 className="w-8 h-8 text-[#FFD700]" />, image: "https://images.unsplash.com/photo-1507450491950-2b4d05a28151?auto=format&fit=crop&q=80", href: "/zones?zone=PS4", desc: "Competitive PS4 Pro setups", border: "hover:border-[#FFD700] hover:shadow-[0_0_20px_rgba(255,215,0,0.3)]" },
-    { title: "VIP Lounge", icon: <Crown className="w-8 h-8 text-[#FF006E]" />, image: "https://images.unsplash.com/photo-1593508512255-86ab42a8e620?auto=format&fit=crop&q=80", href: "/lounge", desc: "Private rooms, 85\" displays", border: "hover:border-[#FF006E] hover:shadow-[0_0_20px_rgba(255,0,110,0.3)]" },
+    { title: "Simulation Zone", icon: <Car className="w-8 h-8 text-[#00D4FF]" />, image: "/images/simulation.jpg", href: "/zones?zone=Simulation", desc: "Full-motion racing & flight sims", border: "hover:border-[#00D4FF] hover:shadow-[0_0_20px_rgba(0,212,255,0.3)]" },
+    { title: "PS5 Zone", icon: <Gamepad2 className="w-8 h-8 text-[#DC2626]" />, image: "/images/ps5.jpg", href: "/zones?zone=PS5", desc: "4K OLED screens, DualSense haptics", border: "hover:border-[#DC2626] hover:shadow-[0_0_20px_rgba(220,38,38,0.3)]" },
+    { title: "PS4 Zone", icon: <Gamepad2 className="w-8 h-8 text-[#FFD700]" />, image: "/images/ps4.jpg", href: "/zones?zone=PS4", desc: "Competitive PS4 Pro setups", border: "hover:border-[#FFD700] hover:shadow-[0_0_20px_rgba(255,215,0,0.3)]" },
+    { title: "VIP Lounge", icon: <Crown className="w-8 h-8 text-[#FF006E]" />, image: "/images/viplounge.jpg", href: "/lounge", desc: "Private rooms, 85\" displays", border: "hover:border-[#FF006E] hover:shadow-[0_0_20px_rgba(255,0,110,0.3)]" },
   ];
 
   const features = [
@@ -48,7 +48,7 @@ export default function Home() {
         <motion.div {...fadeIn(0)} className="absolute inset-0 z-0 bg-[#000000]">
           <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-[#DC2626]/10 rounded-full blur-[120px] animate-pulse" />
           <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-[#00D4FF]/10 rounded-full blur-[120px] animate-pulse" style={{ animationDelay: "2s" }} />
-          <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&q=80')] bg-cover bg-center opacity-25 mix-blend-luminosity" />
+          <div className="absolute inset-0 bg-[url('/hero_bg.png')] bg-cover bg-center opacity-25 mix-blend-luminosity" />
           <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#000000]/70 to-[#000000]" />
         </motion.div>
 
@@ -190,12 +190,12 @@ export default function Home() {
 
           <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
             {[
-              { name: "FC 24", img: "https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&q=80" },
-              { name: "Spider-Man 2", img: "https://images.unsplash.com/photo-1612036782180-6f0b6cd846fe?auto=format&fit=crop&q=80" },
-              { name: "God of War", img: "https://images.unsplash.com/photo-1627850604058-52e40de1b847?auto=format&fit=crop&q=80" },
-              { name: "GTA V", img: "https://images.unsplash.com/photo-1593305841991-05c297ba4575?auto=format&fit=crop&q=80" },
-              { name: "Mortal Kombat 1", img: "https://images.unsplash.com/photo-1552824236-419f6a2ad590?auto=format&fit=crop&q=80" },
-              { name: "Call of Duty", img: "https://images.unsplash.com/photo-1509198397868-475647b2a1e5?auto=format&fit=crop&q=80" }
+              { name: "FC 24", img: "/images/FC24.avif" },
+              { name: "Spider-Man 2", img: "/images/spiderman2.webp" },
+              { name: "God of War", img: "/images/godofwar.avif" },
+              { name: "GTA V", img: "/images/GTA5.webp" },
+              { name: "Mortal Kombat 1", img: "/images/motralkombat.webp" },
+              { name: "Call of Duty", img: "/images/callofduty.webp" }
             ].map((game, idx) => (
               <motion.div key={idx} initial={{ opacity: 0, scale: 0.9 }} whileInView={{ opacity: 1, scale: 1 }} viewport={{ once: true }} transition={{ duration: 0.4, delay: idx * 0.05 }}
                 className="group relative aspect-[3/4] rounded-2xl overflow-hidden border border-white/10">
@@ -234,7 +234,7 @@ export default function Home() {
 
           <motion.div initial={{ opacity: 0, x: 40 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ duration: 0.7, ease: easeCustom, delay: 0.1 }} className="w-full lg:w-1/2">
             <div className="relative aspect-video rounded-3xl overflow-hidden border border-white/10 shadow-[0_0_60px_rgba(255,0,110,0.15)]">
-              <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1593508512255-86ab42a8e620?auto=format&fit=crop&q=80')] bg-cover bg-center opacity-70 hover:opacity-90 transition-opacity duration-700" />
+              <div className="absolute inset-0 bg-[url('/images/viplounge.jpg')] bg-cover bg-center opacity-70 hover:opacity-90 transition-opacity duration-700" />
               <div className="absolute inset-0 bg-gradient-to-t from-[#000000]/60 to-transparent" />
             </div>
           </motion.div>
@@ -243,7 +243,7 @@ export default function Home() {
 
       {/* ── FINAL CTA ── */}
       <section className="relative z-10 py-24 bg-[#000000] border-t border-white/5 overflow-hidden">
-        <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&q=80')] bg-cover bg-center opacity-10" />
+        <div className="absolute inset-0 bg-[url('/hero_bg.png')] bg-cover bg-center opacity-10" />
         <div className="absolute inset-0 bg-gradient-to-b from-[#000000]/80 via-transparent to-[#000000]/80" />
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-[#DC2626]/10 rounded-full blur-[120px]" />
 

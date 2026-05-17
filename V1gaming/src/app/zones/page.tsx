@@ -2,9 +2,9 @@ import type { Metadata } from "next";
 import GamingZonesClient from "./GamingZonesClient";
 
 export const metadata: Metadata = {
-  title: "Gaming Zones — PS5, PS4, VR & Simulation",
+  title: "Gaming Zones — PS5, PS4, VR, Simulation & Lounges",
   description:
-    "Explore V1 Gaming Center's premium zones: PS5 Zone (₹199/hr), PS4 Zone (₹149/hr), VR Zone (₹200/hr), and Simulation Zone (₹350/hr) at 98, Red Hills Road, Kalpalayam, Chennai-600099.",
+    "Explore V1 Gaming Center's premium zones: PS5 & PS4 Zones, VR, Simulation, Celebrations Lounge (ideal for birthday parties & gaming events), and OTT Lounge (perfect for live sports match viewing & private movie screenings) in Kalpalayam, Chennai.",
   keywords: [
     "PS5 gaming zone Chennai",
     "PS4 gaming zone Chennai",
@@ -13,6 +13,10 @@ export const metadata: Metadata = {
     "gaming zones Kalpalayam Chennai",
     "esports zones Chennai",
     "gaming station prices Chennai",
+    "celebrations lounge Chennai birthday party",
+    "OTT lounge Chennai live cricket",
+    "private movie screening hall Chennai",
+    "gaming birthday party Kalpalayam"
   ],
   alternates: { canonical: "/zones" },
   openGraph: {

@@ -30,7 +30,7 @@ export const metadata: Metadata = {
     template: "%s | V1 Gaming Center Chennai",
   },
   description:
-    "V1 Gaming Center — Chennai's premier esports lounge in Kalpalayam. PS5 Zone, PS4 Zone, VR Zone, Simulation Rigs & exclusive VIP Lounge at 98, Red Hills Road, Chennai-600099. Book your gaming session today!",
+    "V1 Gaming Center — Chennai's premier esports lounge in Kalpalayam. PS5 & PS4 Zones, Simulation Rigs, VR, Celebrations Lounge (perfect for birthday parties, group celebrations, gaming tournaments), and OTT Lounge (watch live sports, cricket matches, movie screenings, private theater sessions). Book your session today!",
   keywords: [
     "gaming center Chennai",
     "esports lounge Chennai",
@@ -47,6 +47,12 @@ export const metadata: Metadata = {
     "book gaming station Chennai",
     "premium gaming lounge",
     "VIP gaming lounge Chennai",
+    "birthday party lounge Chennai",
+    "watch live cricket Chennai lounge",
+    "OTT lounge Chennai",
+    "private movie theater Kalpalayam",
+    "group celebration hall Chennai",
+    "esports tournaments Kalpalayam"
   ],
   authors: [{ name: "V1 Gaming Center", url: SITE_URL }],
   creator: "V1 Gaming Center",
@@ -168,12 +174,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${spaceGrotesk.variable} ${inter.variable} antialiased dark scroll-smooth`}>
+    <html lang="en" data-scroll-behavior="smooth" className={`${spaceGrotesk.variable} ${inter.variable} antialiased dark scroll-smooth`}>
       <head>
         {/* Favicon */}
-        <link rel="icon" href="/favicon.ico" sizes="any" />
-        <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
-        <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+        <link rel="icon" href="/images/V1logo.png" type="image/png" />
+        <link rel="apple-touch-icon" href="/images/V1logo.png" />
         <link rel="manifest" href="/site.webmanifest" />
 
         {/* Theme color for browser UI */}

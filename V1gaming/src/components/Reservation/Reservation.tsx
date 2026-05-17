@@ -19,12 +19,13 @@ const DEFAULT_SLOTS = [
 
 /** Stations per zone — names shown to user */
 const ZONE_STATIONS: Record<string, string[]> = {
-  PS5:                 ["Station 1", "Station 2", "Station 3", "Station 4", "Station 5"],
+  PS5:                 ["Station 1", "Station 2", "Station 3"],
   PS4:                 ["Station 1", "Station 2", "Station 3", "Station 4"],
   Simulation:          ["Station 1", "Station 2"],
   VR:                  ["Station 1", "Station 2", "Station 3"],
   "Pvt Lounge":        ["Station 1"],
   "Celebrations Lounge": ["Station 1"],
+  "OTT Lounge":        ["Station 1"],
 };
 
 // IST = UTC+5:30 — use this instead of toISOString() which returns UTC
@@ -42,11 +43,11 @@ export default function Reservation() {
   const [toast, setToast] = useState<{message: string, type: 'success' | 'error'} | null>(null);
   
   const searchParams = useSearchParams();
-  const [activeTab, setActiveTab] = useState<"PS5" | "PS4" | "Simulation" | "VR" | "Pvt Lounge" | "Celebrations Lounge">("PS5");
+  const [activeTab, setActiveTab] = useState<"PS5" | "PS4" | "Simulation" | "VR" | "Pvt Lounge" | "Celebrations Lounge" | "OTT Lounge">("PS5");
 
   useEffect(() => {
     const zone = searchParams.get("zone");
-    const validTabs = ["PS5", "PS4", "Simulation", "VR", "Pvt Lounge", "Celebrations Lounge"];
+    const validTabs = ["PS5", "PS4", "Simulation", "VR", "Pvt Lounge", "Celebrations Lounge", "OTT Lounge"];
     if (zone && validTabs.includes(zone)) {
       setActiveTab(zone as any);
     }
@@ -184,6 +185,9 @@ export default function Reservation() {
     } else if (type === "Celebrations Lounge") {
       // 1st hour: ₹3000, add-on hours: ₹2000 each
       return 3000 + (numHours - 1) * 2000;
+    } else if (type === "OTT Lounge") {
+      // Premium movie & gaming lounge: ₹250 flat per hour
+      return 250 * numHours;
     } else if (type === "Simulation") {
       return 350 * numPlayers * numHours;
     } else if (type === "VR") {
@@ -324,7 +328,7 @@ export default function Reservation() {
 
         {/* Tabs */}
         <div className="flex flex-wrap gap-2 mb-8">
-          {["PS5", "PS4", "Simulation", "VR", "Pvt Lounge", "Celebrations Lounge"].map((tab) => (
+          {["PS5", "PS4", "Simulation", "VR", "Pvt Lounge", "Celebrations Lounge", "OTT Lounge"].map((tab) => (
             <button 
               key={tab}
               onClick={() => setActiveTab(tab as any)}
@@ -510,7 +514,7 @@ export default function Reservation() {
                 <div className="flex flex-col gap-3 pt-4">
                   <span className="text-gray-400 font-medium flex items-center gap-2"><Users className="w-4 h-4" /> Select Number of Players</span>
                   <div className="flex flex-wrap items-center gap-2 bg-[#111111] p-2 rounded-xl border border-white/10">
-                    {Array.from({ length: activeTab === "Celebrations Lounge" ? 12 : 4 }, (_, i) => i + 1).map(num => (
+                    {Array.from({ length: activeTab === "Celebrations Lounge" ? 12 : activeTab === "OTT Lounge" ? 8 : 4 }, (_, i) => i + 1).map(num => (
                       <button
                         key={num}
                         onClick={() => setPlayers(num)}

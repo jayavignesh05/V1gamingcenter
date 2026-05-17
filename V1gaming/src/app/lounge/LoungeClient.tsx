@@ -23,7 +23,7 @@ export default function LoungeClient() {
     <main className="min-h-screen pb-24 relative overflow-hidden bg-[#000000] selection:bg-[#FF006E]/30">
       {/* Hero */}
       <section className="relative w-full h-[60vh] flex items-center justify-center pt-20 border-b border-white/5">
-        <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1566737236500-c8ac43014a67?auto=format&fit=crop&q=80')] bg-cover bg-center opacity-30 mix-blend-luminosity"></div>
+        <div className="absolute inset-0 bg-[url('/images/viplounge.jpg')] bg-cover bg-center opacity-30 mix-blend-luminosity"></div>
         <div className="absolute inset-0 bg-gradient-to-t from-[#000000] via-[#000000]/80 to-transparent"></div>
         
         <div className="relative z-10 text-center px-4 max-w-4xl mx-auto">
