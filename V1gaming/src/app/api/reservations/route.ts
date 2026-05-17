@@ -104,6 +104,65 @@ export async function POST(request: Request) {
       [values]
     );
 
+    // ── Safe Background WhatsApp Notification Trigger ──
+    const wpToken = process.env.WHATSAPP_TOKEN;
+    const wpPhoneId = process.env.WHATSAPP_PHONE_ID;
+
+    if (wpToken && wpPhoneId) {
+      try {
+        const formattedPhone = phoneTrimmed.startsWith("91") ? phoneTrimmed : `91${phoneTrimmed}`;
+        const timeSlotString = time_slots.join(", ");
+        const WHATSAPP_API_URL = `https://graph.facebook.com/v18.0/${wpPhoneId}/messages`;
+
+        const whatsappBody = {
+          messaging_product: "whatsapp",
+          to: formattedPhone,
+          type: "template",
+          template: {
+            name: "booking_confirmation",
+            language: {
+              code: "en_US"
+            },
+            components: [
+              {
+                type: "body",
+                parameters: [
+                  { type: "text", text: nameTrimmed },
+                  { type: "text", text: booking_date },
+                  { type: "text", text: timeSlotString }
+                ]
+              }
+            ]
+          }
+        };
+
+        // Fire and forget, or wait but catch any API errors
+        fetch(WHATSAPP_API_URL, {
+          method: "POST",
+          headers: {
+            "Authorization": `Bearer ${wpToken}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(whatsappBody),
+        }).then(res => {
+          if (!res.ok) {
+            res.json().then(errData => {
+              console.error("WhatsApp API responded with error:", errData);
+            });
+          } else {
+            console.log("WhatsApp booking confirmation notification sent successfully!");
+          }
+        }).catch(err => {
+          console.error("Network error sending WhatsApp message:", err);
+        });
+
+      } catch (wpErr) {
+        console.error("Failed to build WhatsApp message payload:", wpErr);
+      }
+    } else {
+      console.log("WhatsApp notifications bypassed: WHATSAPP_TOKEN or WHATSAPP_PHONE_ID missing in environment variables.");
+    }
+
     return encryptedJson({ success: true, message: 'Reservations successful' }, 201);
   } catch (error: unknown) {
     console.error('Database insertion error:', error);
