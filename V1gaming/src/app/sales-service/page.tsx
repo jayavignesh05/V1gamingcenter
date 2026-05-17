@@ -45,8 +45,8 @@ export default function SalesService() {
 
   return (
     <main className="min-h-screen pt-32 pb-24 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto selection:bg-[#00D4FF]/30 relative overflow-hidden">
-      {/* Background ambient glows */}
-      <div className="absolute top-[10%] left-[-10%] w-[400px] h-[400px] rounded-full bg-[#DC2626]/5 blur-[120px] pointer-events-none -z-10 animate-pulse" />
+      {/* Background ambient glows (Static for lag-free rendering) */}
+      <div className="absolute top-[10%] left-[-10%] w-[400px] h-[400px] rounded-full bg-[#DC2626]/5 blur-[120px] pointer-events-none -z-10" />
       <div className="absolute bottom-[20%] right-[-10%] w-[500px] h-[500px] rounded-full bg-[#00D4FF]/5 blur-[150px] pointer-events-none -z-10" />
 
       {/* Page Header */}
@@ -91,33 +91,35 @@ export default function SalesService() {
             </p>
           </div>
 
-          {/* Ecosystem Cards (Exactly 2 Premium Local Cards) */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
+          {/* Ecosystem Cards (Premium Responsive Landscape Layout) */}
+          <div className="flex flex-col gap-8">
             {sales.map((item, idx) => (
               <div 
                 key={idx} 
-                className="bg-gradient-to-b from-[#111111] to-[#060606] border border-white/10 rounded-2xl overflow-hidden flex flex-col justify-between transition-all duration-500 group hover:border-[#DC2626]/50 hover:shadow-[0_0_30px_rgba(220,38,38,0.2)] hover:-translate-y-1.5"
+                className="bg-gradient-to-b from-[#111111] to-[#060606] border border-white/10 rounded-2xl overflow-hidden flex flex-col md:flex-row transition-all duration-500 ease-out group hover:border-[#DC2626]/50 hover:shadow-[0_0_30px_rgba(220,38,38,0.25)] hover:-translate-y-1.5 transform-gpu will-change-transform"
               >
                 {/* Product Image banner with local covers */}
-                <div className="relative h-56 w-full overflow-hidden border-b border-white/5 bg-[#090909]">
-                  <div className="absolute inset-0 bg-gradient-to-t from-[#111111] via-transparent to-transparent z-10" />
+                <div className="relative h-48 md:h-auto md:w-2/5 overflow-hidden border-b md:border-b-0 md:border-r border-white/5 bg-[#090909] flex-shrink-0">
+                  <div className="absolute inset-0 bg-gradient-to-t md:bg-gradient-to-r from-[#111111] via-transparent to-transparent z-10" />
                   <img 
                     src={item.image} 
                     alt={item.title} 
-                    className="w-full h-full object-cover opacity-75 group-hover:opacity-90 group-hover:scale-108 transition-all duration-500 ease-out" 
+                    className="w-full h-full object-cover opacity-70 group-hover:opacity-90 group-hover:scale-108 transition-all duration-500 ease-out" 
                   />
                 </div>
 
                 {/* Content */}
-                <div className="p-6 flex flex-col flex-grow">
-                  <h3 className="text-xl font-heading font-black text-white uppercase mb-3 group-hover:text-[#DC2626] transition-colors leading-tight">
-                    {item.title}
-                  </h3>
-                  <p className="text-gray-400 text-xs leading-relaxed mb-6 flex-grow font-medium">
-                    {item.desc}
-                  </p>
+                <div className="p-6 flex flex-col justify-between flex-grow">
+                  <div>
+                    <h3 className="text-xl font-heading font-black text-white uppercase mb-2 group-hover:text-[#DC2626] transition-colors leading-tight">
+                      {item.title}
+                    </h3>
+                    <p className="text-gray-400 text-xs leading-relaxed mb-6 font-medium">
+                      {item.desc}
+                    </p>
+                  </div>
                   
-                  <div className="flex flex-col gap-3 mt-auto pt-4 border-t border-white/5">
+                  <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pt-4 border-t border-white/5 mt-auto">
                     <div className="text-[#00D4FF] font-heading font-black text-xs uppercase tracking-wider flex items-center gap-1.5">
                       <span className="w-1.5 h-1.5 rounded-full bg-[#00D4FF] animate-pulse" />
                       Contact for Pricing
@@ -126,9 +128,9 @@ export default function SalesService() {
                       href={`https://wa.me/919092095300?text=${encodeURIComponent(item.whatsappQuery)}`}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="w-full py-3 bg-[#25D366] hover:bg-[#25D366]/90 text-white rounded-xl font-heading font-bold text-xs uppercase tracking-widest text-center transition-all duration-300 hover:shadow-[0_0_15px_rgba(37,211,102,0.4)] flex items-center justify-center gap-2 hover:scale-[1.02] active:scale-[0.98]"
+                      className="w-full sm:w-auto px-6 py-3 bg-[#25D366] hover:bg-[#25D366]/90 text-white rounded-xl font-heading font-bold text-xs uppercase tracking-widest text-center transition-all duration-300 hover:shadow-[0_0_15px_rgba(37,211,102,0.4)] flex items-center justify-center gap-2 hover:scale-[1.02] active:scale-[0.98]"
                     >
-                      <FaWhatsapp className="w-4.5 h-4.5" /> WhatsApp to Inquire
+                      <FaWhatsapp className="w-4.5 h-4.5" /> Inquire on WhatsApp
                     </a>
                   </div>
                 </div>
@@ -154,7 +156,7 @@ export default function SalesService() {
             {services.map((svc, idx) => (
               <div 
                 key={idx} 
-                className="glass-panel p-5 flex flex-col sm:flex-row items-start sm:items-center gap-6 group hover:border-[#00D4FF]/40 hover:shadow-[0_0_20px_rgba(0,212,255,0.15)] transition-all duration-300"
+                className="glass-panel p-5 flex flex-col sm:flex-row items-start sm:items-center gap-6 group hover:border-[#00D4FF]/40 hover:shadow-[0_0_20px_rgba(0,212,255,0.15)] transition-all duration-300 transform-gpu will-change-transform"
               >
                 <div className="p-3 bg-[#000000] rounded-xl border border-white/5 group-hover:border-[#00D4FF]/30 transition-colors">
                   {svc.icon}
@@ -168,7 +170,7 @@ export default function SalesService() {
           </div>
 
           {/* Glowing WhatsApp support card */}
-          <div className="glass-card p-8 border-t-4 border-[#25D366] shadow-[0_0_30px_rgba(37,211,102,0.05)] hover:shadow-[0_0_40px_rgba(37,211,102,0.15)] transition-all duration-500 rounded-2xl bg-gradient-to-b from-[#111111] to-[#060606] relative overflow-hidden">
+          <div className="glass-card p-8 border-t-4 border-[#25D366] shadow-[0_0_30px_rgba(37,211,102,0.05)] hover:shadow-[0_0_40px_rgba(37,211,102,0.15)] transition-all duration-500 rounded-2xl bg-gradient-to-b from-[#111111] to-[#060606] relative overflow-hidden transform-gpu will-change-transform">
             {/* WhatsApp Accent Glow */}
             <div className="absolute top-0 right-0 w-32 h-32 rounded-full bg-[#25D366]/5 blur-3xl pointer-events-none" />
 

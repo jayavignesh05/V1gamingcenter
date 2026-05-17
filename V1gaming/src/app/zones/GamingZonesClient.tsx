@@ -98,10 +98,10 @@ export default function GamingZonesClient() {
 
   return (
     <main className="min-h-screen pt-28 pb-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto selection:bg-[#DC2626]/30 relative overflow-hidden">
-      {/* Background Glow Elements */}
-      <div className="absolute top-[10%] left-[5%] w-[350px] h-[350px] rounded-full bg-[#DC2626]/5 blur-[120px] pointer-events-none -z-10 animate-pulse" />
-      <div className="absolute top-[35%] right-[5%] w-[450px] h-[450px] rounded-full bg-[#9D00FF]/5 blur-[150px] pointer-events-none -z-10" style={{ animationDelay: "2s" }} />
-      <div className="absolute bottom-[10%] left-[20%] w-[400px] h-[400px] rounded-full bg-[#FFB000]/5 blur-[130px] pointer-events-none -z-10 animate-pulse" style={{ animationDelay: "4s" }} />
+      {/* Background Glow Elements (Static for 60 FPS scrolling performance) */}
+      <div className="absolute top-[10%] left-[5%] w-[350px] h-[350px] rounded-full bg-[#DC2626]/5 blur-[120px] pointer-events-none -z-10" />
+      <div className="absolute top-[35%] right-[5%] w-[450px] h-[450px] rounded-full bg-[#9D00FF]/5 blur-[150px] pointer-events-none -z-10" />
+      <div className="absolute bottom-[10%] left-[20%] w-[400px] h-[400px] rounded-full bg-[#FFB000]/5 blur-[130px] pointer-events-none -z-10" />
 
       <motion.div
         initial={{ opacity: 0, y: 28 }}
@@ -121,14 +121,14 @@ export default function GamingZonesClient() {
         </p>
       </motion.div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto relative z-10">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 max-w-5xl mx-auto relative z-10">
         {zones.map((zone, idx) => (
           <motion.div 
             key={idx}
             initial={{ opacity: 0, y: 32 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: idx * 0.12 }}
-            className={`relative flex flex-col justify-between overflow-hidden bg-gradient-to-b from-[#111111] to-[#060606] border border-white/10 rounded-3xl transition-all duration-500 group ${zone.glowClass} hover:-translate-y-2.5`}
+            className={`relative flex flex-col justify-between overflow-hidden bg-gradient-to-b from-[#111111] to-[#060606] border border-white/10 rounded-3xl transition-all duration-500 ease-out group ${zone.glowClass} hover:-translate-y-2.5 transform-gpu will-change-transform`}
             style={{ "--card-color": zone.color } as React.CSSProperties}
           >
             {/* Top accent glow overlay */}

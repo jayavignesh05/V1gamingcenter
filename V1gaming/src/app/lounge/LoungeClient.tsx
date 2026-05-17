@@ -61,7 +61,7 @@ export default function LoungeClient() {
             <motion.div 
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              className="glass-card p-8 flex flex-col justify-center items-center text-center border-t-4 border-[#FF006E]"
+              className="glass-card p-8 flex flex-col justify-center items-center text-center border-t-4 border-[#FF006E] transform-gpu will-change-transform"
             >
               <h2 className="text-2xl font-heading font-black text-white uppercase mb-2">Private Lounge PS5</h2>
               <div className="text-4xl font-heading font-black text-[#FF006E] mb-1 drop-shadow-[0_0_15px_rgba(255,0,110,0.4)]">₹400<span className="text-lg text-gray-500">/hr</span></div>
@@ -76,7 +76,7 @@ export default function LoungeClient() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.1 }}
-              className="glass-card p-8 flex flex-col justify-center items-center text-center border-t-4 border-[#9D00FF]"
+              className="glass-card p-8 flex flex-col justify-center items-center text-center border-t-4 border-[#9D00FF] transform-gpu will-change-transform"
             >
               <h2 className="text-2xl font-heading font-black text-white uppercase mb-2">Celebrations Lounge (Game + OTT)</h2>
               <div className="text-4xl font-heading font-black text-[#9D00FF] mb-1 drop-shadow-[0_0_15px_rgba(157,0,255,0.4)]">₹3,000<span className="text-lg text-gray-500">/hr</span></div>
@@ -93,7 +93,7 @@ export default function LoungeClient() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
-            className="glass-panel p-10 flex flex-col justify-center"
+            className="glass-panel p-10 flex flex-col justify-center transform-gpu will-change-transform"
           >
             <h3 className="text-2xl font-heading font-black text-white uppercase mb-6 border-b border-white/10 pb-4">Lounge Features</h3>
             <ul className="space-y-6">
@@ -113,7 +113,7 @@ export default function LoungeClient() {
           <p className="text-gray-400">Tailored packages for every squad size.</p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {bookingOptions.map((opt, idx) => (
             <div key={idx} className="relative h-64 md:h-80 rounded-2xl overflow-hidden group border border-white/10 hover:border-[#FF006E]/40 transition-colors">
               <div className="absolute inset-0 bg-gradient-to-br from-[#1a0a0f] to-[#0a0a0a] z-0"></div>

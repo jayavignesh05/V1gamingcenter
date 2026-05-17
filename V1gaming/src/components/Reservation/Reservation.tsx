@@ -326,13 +326,13 @@ export default function Reservation() {
           </div>
         </div>
 
-        {/* Tabs */}
-        <div className="flex flex-wrap gap-2 mb-8">
+        {/* Tabs - Sleek horizontal scroll on mobile, wrap grid on desktop */}
+        <div className="flex flex-nowrap overflow-x-auto gap-2 mb-8 pb-3 snap-x [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] -mx-5 px-5 sm:mx-0 sm:px-0 sm:flex-wrap">
           {["PS5", "PS4", "Simulation", "VR", "Pvt Lounge", "Celebrations Lounge", "OTT Lounge"].map((tab) => (
             <button 
               key={tab}
               onClick={() => setActiveTab(tab as any)}
-              className={`px-6 py-3 font-heading font-bold uppercase text-sm rounded-xl transition-all ${
+              className={`px-6 py-3 font-heading font-bold uppercase text-sm rounded-xl transition-all flex-shrink-0 snap-align-start ${
                 activeTab === tab 
                   ? "bg-[#DC2626] text-white shadow-[0_0_15px_rgba(220,38,38,0.4)]" 
                   : "bg-[#111111] border border-white/5 text-gray-400 hover:text-white hover:border-[#DC2626]/50"
